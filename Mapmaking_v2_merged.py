@@ -1,20 +1,9 @@
 import cv2 as cv
 import numpy as np
-import json
 img = cv.imread("img4.jpg", cv.IMREAD_GRAYSCALE)
 
 if img is None:
 	raise FileNotFoundError("Image not found: img.jpg")
-
-# 이미지 크기 조정 (긴 변을 1200px으로 설정)
-height, width = img.shape
-max_dim = max(height, width)
-if max_dim > 1200:
-	scale = 1200 / max_dim
-	new_width = int(width * scale)
-	new_height = int(height * scale)
-	img = cv.resize(img, (new_width, new_height), interpolation=cv.INTER_AREA)
-	print(f"이미지 크기 조정: {width}x{height} -> {new_width}x{new_height}")
 
 
 def clamp(value, low, high):
@@ -63,7 +52,7 @@ def auto_line_params(image):
 	bridge_dilate_iterations = 2 if image_scale < 1200 else 3
 	bridge_iterations = 2 if image_scale < 1200 else 3
 	canny_sigma = 0.35 if image_scale < 900 else 0.45
-	clahe_clip_limit = 3.0 if image_scale < 1000 else 3.5
+	clahe_clip_limit = 2.0 if image_scale < 1000 else 2.2
 	return min_contour_len, min_contour_area, bridge_kernel_size, bridge_dilate_iterations, bridge_iterations, canny_sigma, clahe_clip_limit
 
 img_select = 0
@@ -74,7 +63,7 @@ min_contour_len, min_contour_area, bridge_kernel_size, bridge_dilate_iterations,
 img_blur = cv.bilateralFilter(img, kernel_size, sigma_color, sigma_space)
 
 # 감마 보정으로 어두운 부분 강화 (배경이 밝은 경우)
-gamma = 0.8
+gamma = 0.9
 inv_gamma = 1.0 / gamma
 table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in range(256)]).astype("uint8")
 img_blur = cv.LUT(img_blur, table)
@@ -91,10 +80,8 @@ img_edge_bridge = cv.morphologyEx(img_edge_bridge, cv.MORPH_CLOSE, bridge_kernel
 contours, _ = cv.findContours(img_edge_bridge, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 img_long_edge = np.zeros_like(img_edge)
 
-# 조건을 만족하는 contour들 중 가장 큰 것 하나만 선택
-largest_contour = None
-largest_area = 0
-
+# 조건을 만족하는 모든 contour 수집
+valid_contours = []
 for contour in contours:
 	area = cv.contourArea(contour)
 	if area < min_contour_area:
@@ -102,16 +89,21 @@ for contour in contours:
 	perimeter = cv.arcLength(contour, True)
 	if perimeter < min_contour_len:
 		continue
-	
-	# 가장 큰 contour 찾기
-	if area > largest_area:
-		largest_area = area
-		largest_contour = contour
+	valid_contours.append(contour)
 
-# 가장 큰 contour만 그리기
-if largest_contour is not None:
-	cv.drawContours(img_long_edge, [largest_contour], -1, 255, 1)
-	print(f"가장 큰 폐곡선 선택됨: 면적={largest_area:.0f}, 둘레={cv.arcLength(largest_contour, True):.0f}")
+print(f"조건을 만족하는 폐곡선: {len(valid_contours)}개")
+
+if len(valid_contours) > 0:
+	# 모든 valid contour를 img_long_edge에 그리기
+	cv.drawContours(img_long_edge, valid_contours, -1, 255, 1)
+	
+	# 분리된 contour들을 가장자리를 통해 연결하기
+	border_thickness = 1
+	cv.rectangle(img_long_edge, (0, 0), (img_long_edge.shape[1]-1, img_long_edge.shape[0]-1), 255, border_thickness)
+	
+	print(f"{len(valid_contours)}개의 폐곡선을 가장자리로 연결")
+else:
+	print("조건을 만족하는 폐곡선이 없습니다")
 
 def find_shortest_path(edge_image, start, end):
 	"""BFS를 사용해 edge 위의 최단거리 경로 찾기"""
@@ -265,34 +257,6 @@ else:
 		
 		cv.imshow("Result with Red Path", img_original_rgb)
 		print("빨간 선으로 표시된 최종 결과입니다. 종료하려면 아무 키나 누르세요.")
-		
-		# 경로 정보를 JSON으로 저장
-		path_data = {
-			"start_point": list(actual_start),
-			"end_point": list(actual_end),
-			"path_points": path,
-			"contours": []
-		}
-		
-		# contour 포인트들 추출
-		for contour in red_contours:
-			contour_points = contour.reshape(-1, 2).tolist()
-			path_data["contours"].append(contour_points)
-		
-		# JSON 파일로 저장
-		with open("path_data.json", "w") as f:
-			json.dump(path_data, f, indent=2)
-		print("경로 정보가 'path_data.json'에 저장되었습니다.")
-		
-		# TXT 파일로도 저장 (간단한 형식)
-		with open("path_data.txt", "w") as f:
-			f.write(f"Start Point: {actual_start}\n")
-			f.write(f"End Point: {actual_end}\n")
-			f.write(f"Total Path Points: {len(path)}\n\n")
-			f.write("Path Points (x, y):\n")
-			for i, point in enumerate(path):
-				f.write(f"{i}: {point}\n")
-		print("경로 정보가 'path_data.txt'에 저장되었습니다.")
 
 while True:
 	key = cv.waitKey(0) 
