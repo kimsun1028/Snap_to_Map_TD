@@ -1,131 +1,230 @@
 import cv2 as cv
 import numpy as np
-img_route = "img.jpg"
-img_original = cv.imread(img_route, cv.IMREAD_GRAYSCALE)
-img = img_original.copy()
+img = cv.imread("img.jpg", cv.IMREAD_GRAYSCALE)
 
-kernel_size = 5
-sigma_color = 50
-sigma_space = 50
-n_iterations = 1
+if img is None:
+	raise FileNotFoundError("Image not found: img.jpg")
 
-# Canny 임계값 조정 (덜 민감하게)
-threshold1 = 200
-threshold2 = 400
-aperture_size = 3
 
-# 각 처리 단계 저장
-img_equalized = cv.equalizeHist(img)
-img_filtered = cv.bilateralFilter(img_equalized, kernel_size, sigma_color, sigma_space)
+def clamp(value, low, high):
+	return max(low, min(high, value))
 
-# 엣지 감지
-edge = cv.Canny(img_filtered, threshold1, threshold2, apertureSize = aperture_size)
 
-# 외곽선만 코너 후보로 사용하기 위해 작은 간격을 메운 뒤 가장 큰 윤곽선만 추출
-contour_kernel = np.ones((3, 3), np.uint8)
-closed_edge = cv.morphologyEx(edge, cv.MORPH_CLOSE, contour_kernel)
-contours, _ = cv.findContours(closed_edge, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+def make_odd(value, minimum=3):
+	value = max(minimum, int(round(value)))
+	return value if value % 2 == 1 else value + 1
 
-corner_points = []
-contours = sorted(contours, key=cv.contourArea, reverse=True)
-largest_contour = None
-for contour in contours[:7]:
-    if cv.contourArea(contour) < 8.0:
-        continue
 
-    if largest_contour is None:
-        largest_contour = contour
+def auto_canny(image, sigma=0.33, aperture=3):
+	v = float(np.median(image))
+	lower = int(max(0, (1.0 - sigma) * v))
+	upper = int(min(255, (1.0 + sigma) * v))
+	return cv.Canny(image, lower, upper, apertureSize=aperture)
 
-    perimeter = cv.arcLength(contour, True)
-    if perimeter <= 0:
-        continue
 
-    approx = cv.approxPolyDP(contour, 0.0025 * perimeter, True)
-    for point in approx:
-        x, y = int(point[0][0]), int(point[0][1])
-        corner_points.append((x, y))
+def auto_blur_params(image):
+	height, width = image.shape
+	brightness = float(np.mean(image))
+	contrast = float(np.std(image))
 
-if largest_contour is not None:
-    topmost_point = min(largest_contour[:, 0, :], key=lambda point: point[1])
-    corner_points.append((int(topmost_point[0]), int(topmost_point[1])))
+	median_ksize = 5 if min(height, width) >= 800 else 3
+	if brightness < 70:
+		median_ksize = 3
+	elif brightness > 170:
+		median_ksize = 5
 
-def add_feature_points(points_source, use_harris=False):
-    corners = cv.goodFeaturesToTrack(
-        points_source,
-        maxCorners=300,
-        qualityLevel=0.0002 if not use_harris else 0.0001,
-        minDistance=1,
-        blockSize=3,
-        useHarrisDetector=use_harris,
-        k=0.04,
-    )
-    if corners is not None:
-        for corner in corners:
-            x, y = int(corner[0][0]), int(corner[0][1])
-            corner_points.append((x, y))
+	bilateral_d = make_odd(min(height, width) / 220.0, minimum=3)
+	bilateral_d = clamp(bilateral_d, 3, 7)
 
-def dedupe_points(points, min_distance=2):
-    unique_points = []
-    min_distance_sq = min_distance * min_distance
+	sigma_color = clamp(35 + contrast * 0.35, 30, 85)
+	sigma_space = clamp(1.2 + contrast / 160.0, 1.2, 3.0)
 
-    for x, y in points:
-        for index, (ux, uy) in enumerate(unique_points):
-            if (x - ux) * (x - ux) + (y - uy) * (y - uy) <= min_distance_sq:
-                unique_points[index] = ((ux + x) // 2, (uy + y) // 2)
-                break
-        else:
-            unique_points.append((x, y))
+	return median_ksize, bilateral_d, sigma_color, sigma_space
 
-    return unique_points
 
-corner_points = dedupe_points(corner_points, min_distance=2)
+def auto_line_params(image):
+	height, width = image.shape
+	image_scale = min(height, width)
+	min_contour_len = max(60, int(image_scale * 0.14))
+	min_contour_area = max(80, int(height * width * 0.00035))
+	bridge_kernel_size = 5 if image_scale < 900 else 7
+	bridge_dilate_iterations = 2 if image_scale < 1200 else 3
+	bridge_iterations = 2 if image_scale < 1200 else 3
+	canny_sigma = 0.55 if image_scale < 900 else 0.60
+	clahe_clip_limit = 2.0 if image_scale < 1000 else 2.2
+	return min_contour_len, min_contour_area, bridge_kernel_size, bridge_dilate_iterations, bridge_iterations, canny_sigma, clahe_clip_limit
 
-stitched_outline = None
-if len(corner_points) >= 3:
-    corner_array = np.array(corner_points, dtype=np.int32).reshape(-1, 1, 2)
-    stitched_outline = cv.convexHull(corner_array)
+img_select = 0
 
-# 윤곽선 코너가 적으면 보조 코너를 추가로 탐지
-if len(corner_points) < 300:
-    add_feature_points(img_filtered, use_harris=False)
-    add_feature_points(img_filtered, use_harris=True)
-    add_feature_points(closed_edge, use_harris=False)
-    add_feature_points(closed_edge, use_harris=True)
+median_ksize, kernel_size, sigma_color, sigma_space = auto_blur_params(img)
+min_contour_len, min_contour_area, bridge_kernel_size, bridge_dilate_iterations, bridge_iterations, canny_sigma, clahe_clip_limit = auto_line_params(img)
 
-corner_points = dedupe_points(corner_points, min_distance=2)
+img_blur = cv.medianBlur(img, median_ksize)
+img_blur = cv.bilateralFilter(img_blur, kernel_size, sigma_color, sigma_space)
 
-if len(corner_points) >= 3:
-    corner_array = np.array(corner_points, dtype=np.int32).reshape(-1, 1, 2)
-    stitched_outline = cv.convexHull(corner_array)
+clahe = cv.createCLAHE(clipLimit=clahe_clip_limit, tileGridSize=(8, 8))
+img_clahe = clahe.apply(img_blur)
+img_edge = auto_canny(img_clahe, sigma=canny_sigma, aperture=3)
 
-# 엣지 이미지에 작은 빨간 점으로 코너 표시
-edge_with_corners = cv.cvtColor(edge, cv.COLOR_GRAY2BGR)
+bridge_kernel = cv.getStructuringElement(cv.MORPH_RECT, (bridge_kernel_size, bridge_kernel_size))
+img_edge_bridge = cv.dilate(img_edge, bridge_kernel, iterations=bridge_dilate_iterations)
+img_edge_bridge = cv.morphologyEx(img_edge_bridge, cv.MORPH_CLOSE, bridge_kernel, iterations=bridge_iterations)
 
-if corner_points:
-    for x, y in corner_points:
-        cv.circle(edge_with_corners, (x, y), 2, (0, 0, 255), -1)  # 작은 빨간 점
+contours, _ = cv.findContours(img_edge_bridge, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+img_long_edge = np.zeros_like(img_edge)
+kept_contours = 0
+for contour in contours:
+	area = cv.contourArea(contour)
+	if area < min_contour_area:
+		continue
+	perimeter = cv.arcLength(contour, True)
+	if perimeter < min_contour_len:
+		continue
+	cv.drawContours(img_long_edge, [contour], -1, 255, 1)
+	kept_contours += 1
 
-if stitched_outline is not None:
-    cv.polylines(edge_with_corners, [stitched_outline], True, (0, 255, 0), 1)
-    print(f"찾은 코너 수: {len(corner_points)}")
+def find_shortest_path(edge_image, start, end):
+	"""BFS를 사용해 edge 위의 최단거리 경로 찾기"""
+	from collections import deque
+	
+	height, width = edge_image.shape
+	visited = set()
+	parent = {}
+	queue = deque([start])
+	visited.add(start)
+	
+	directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+	
+	while queue:
+		x, y = queue.popleft()
+		
+		if (x, y) == end:
+			path = []
+			current = end
+			while current in parent:
+				path.append(current)
+				current = parent[current]
+			path.append(start)
+			return path[::-1]
+		
+		for dx, dy in directions:
+			nx, ny = x + dx, y + dy
+			if 0 <= nx < width and 0 <= ny < height and (nx, ny) not in visited:
+				if edge_image[ny, nx] > 0:
+					visited.add((nx, ny))
+					parent[(nx, ny)] = (x, y)
+					queue.append((nx, ny))
+	
+	return []
+
+def find_closest_edge_point(edge_image, click_point, max_distance=50):
+	"""클릭한 지점에서 가장 가까운 edge 픽셀 찾기"""
+	x, y = click_point
+	height, width = edge_image.shape
+	
+	min_dist = float('inf')
+	closest_point = None
+	
+	for dy in range(-max_distance, max_distance + 1):
+		for dx in range(-max_distance, max_distance + 1):
+			nx, ny = x + dx, y + dy
+			if 0 <= nx < width and 0 <= ny < height and edge_image[ny, nx] > 0:
+				dist = dx * dx + dy * dy
+				if dist < min_dist:
+					min_dist = dist
+					closest_point = (nx, ny)
+	
+	return closest_point
+
+mouse_points = []
+
+def mouse_callback(event, x, y, flags, param):
+	"""마우스 클릭 콜백"""
+	global mouse_points
+	if event == cv.EVENT_LBUTTONDOWN:
+		mouse_points.append((x, y))
+		print(f"Point {len(mouse_points)}: ({x}, {y})")
+
+cv.imshow("blur",img_blur)
+cv.imshow("CLAHE",img_clahe)
+cv.imshow("autoCanny",img_edge)
+cv.imshow("bridgeEdge",img_edge_bridge)
+cv.imshow("longOutlineOnly",img_long_edge)
+
+# 마우스 콜백 설정 (longOutlineOnly 창에서)
+cv.setMouseCallback("longOutlineOnly", mouse_callback)
+
+print("시작점을 클릭하세요 (왼쪽 마우스 버튼)")
+while len(mouse_points) < 1:
+	key = cv.waitKey(1)
+	if key == 27:
+		print("취소됨")
+		cv.destroyAllWindows()
+		exit()
+
+print("끝점을 클릭하세요 (왼쪽 마우스 버튼)")
+while len(mouse_points) < 2:
+	key = cv.waitKey(1)
+	if key == 27:
+		print("취소됨")
+		cv.destroyAllWindows()
+		exit()
+
+start_point = mouse_points[0]
+end_point = mouse_points[1]
+print(f"클릭된 시작점: {start_point}, 끝점: {end_point}")
+
+# 가장 가까운 edge 지점 찾기
+actual_start = find_closest_edge_point(img_long_edge, start_point)
+actual_end = find_closest_edge_point(img_long_edge, end_point)
+
+if actual_start is None or actual_end is None:
+	print("시작점 또는 끝점 근처에서 edge를 찾을 수 없음")
+	print(f"가장 가까운 시작: {actual_start}, 가장 가까운 끝: {actual_end}")
 else:
-    print("코너를 찾을 수 없습니다.")
+	print(f"실제 시작점: {actual_start}, 실제 끝점: {actual_end}")
+	
+	# 경로 1 찾기 (BFS)
+	path = find_shortest_path(img_long_edge, actual_start, actual_end)
+	
+	if path:
+		print(f"경로 1 찾음: {len(path)}개 포인트")
+		
+		# 경로 1 이미지 생성
+		img_path1 = np.zeros_like(img_long_edge)
+		for point in path:
+			x, y = point
+			if 0 <= x < img_path1.shape[1] and 0 <= y < img_path1.shape[0]:
+				img_path1[y, x] = 255
+		
+		# 경로 2: 원본 이미지와 경로 1을 XOR (비트 연산으로 정확하게)
+		img_path2 = cv.bitwise_xor(img_long_edge, img_path1)
+		
+		print(f"경로 2: 원본 XOR 경로 1")
+		
+		current_path_idx = 0
+		path_images = [img_path1, img_path2]
+		
+		def show_path(idx):
+			cv.imshow("Path", path_images[idx])
+			print(f"경로 {idx+1}/2 - 스페이스로 토글, ESC로 선택")
+		
+		show_path(current_path_idx)
+		
+		while True:
+			key = cv.waitKey(0)
+			if key == 32:  # 스페이스
+				current_path_idx = 1 - current_path_idx
+				show_path(current_path_idx)
+			elif key == 27:  # ESC
+				print(f"경로 {current_path_idx+1} 선택됨")
+				break
+	else:
+		print("경로를 찾을 수 없음")
 
-# 2x2 레이아웃으로 배치
-# 모든 이미지를 BGR로 변환 (그레이스케일 -> BGR)
-img_equalized_bgr = cv.cvtColor(img_equalized, cv.COLOR_GRAY2BGR)
-img_filtered_bgr = cv.cvtColor(img_filtered, cv.COLOR_GRAY2BGR)
-edge_bgr = cv.cvtColor(edge, cv.COLOR_GRAY2BGR)
-
-# 위쪽 행: 히스토그램 균등화 | 필터 적용
-top_row = np.hstack([img_equalized_bgr, img_filtered_bgr])
-# 아래쪽 행: 엣지 추출 | 엣지 + 코너
-bottom_row = np.hstack([edge_bgr, edge_with_corners])
-# 두 행을 수직으로 결합
-combined_2x2 = np.vstack([top_row, bottom_row])
-
-cv.imshow('Image Processing Results (2x2): Equalized Histogram | Bilateral Filter | Edge Detection | Edge + Corners', combined_2x2)
-
-key = cv.waitKey(0)
+while True:
+	key = cv.waitKey(0)
+	if key == 27:
+		break
 
 cv.destroyAllWindows()
