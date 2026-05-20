@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import json
-img = cv.imread("img4.jpg", cv.IMREAD_GRAYSCALE)
+img = cv.imread("img.jpg", cv.IMREAD_GRAYSCALE)
 
 if img is None:
 	raise FileNotFoundError("Image not found: img.jpg")
@@ -166,6 +166,50 @@ def find_closest_edge_point(edge_image, click_point, max_distance=50):
 	
 	return closest_point
 
+
+def extract_contour_route(contour, start_point, end_point, prefer_longer=True):
+	"""닫힌 contour에서 시작점과 끝점 사이의 순서 있는 경로를 추출"""
+	if contour is None or len(contour) < 2:
+		return []
+
+	points = contour.reshape(-1, 2).tolist()
+	if len(points) < 2:
+		return points
+
+	def nearest_index(target_point):
+		best_index = 0
+		best_dist = float('inf')
+		for index, point in enumerate(points):
+			dist = (point[0] - target_point[0]) ** 2 + (point[1] - target_point[1]) ** 2
+			if dist < best_dist:
+				best_dist = dist
+				best_index = index
+		return best_index
+
+	start_index = nearest_index(start_point)
+	end_index = nearest_index(end_point)
+	if start_index == end_index:
+		return points
+
+	def walk_path(step):
+		result = []
+		index = start_index
+		while True:
+			result.append(points[index])
+			if index == end_index:
+				break
+			index = (index + step) % len(points)
+			if index == start_index:
+				break
+		return result
+
+	forward_path = walk_path(1)
+	backward_path = walk_path(-1)
+
+	if prefer_longer:
+		return forward_path if len(forward_path) >= len(backward_path) else backward_path
+	return forward_path if len(forward_path) <= len(backward_path) else backward_path
+
 mouse_points = []
 
 def mouse_callback(event, x, y, flags, param):
@@ -238,6 +282,7 @@ else:
 		
 		current_path_idx = 0
 		path_images = [img_path1_complete, img_path2]
+		selected_path_idx = 0
 		
 		def show_path(idx):
 			cv.imshow("Path", path_images[idx])
@@ -252,6 +297,7 @@ else:
 				show_path(current_path_idx)
 			elif key == 27:  # ESC
 				print(f"경로 {current_path_idx+1} 선택됨")
+				selected_path_idx = current_path_idx
 				selected_path = path_images[current_path_idx]
 				break
 	else:
@@ -265,12 +311,21 @@ else:
 		
 		cv.imshow("Result with Red Path", img_original_rgb)
 		print("빨간 선으로 표시된 최종 결과입니다. 종료하려면 아무 키나 누르세요.")
+
+		if selected_path_idx == 0:
+			selected_path_points = path
+		else:
+			selected_path_points = extract_contour_route(largest_contour, actual_start, actual_end, prefer_longer=True)
+			if not selected_path_points:
+				print("경로 2를 contour에서 추출하지 못했습니다. 기존 path를 사용합니다.")
+				selected_path_points = path
 		
 		# 경로 정보를 JSON으로 저장
 		path_data = {
 			"start_point": list(actual_start),
 			"end_point": list(actual_end),
-			"path_points": path,
+			"image_size": [width, height],
+			"path_points": selected_path_points,
 			"contours": []
 		}
 		
