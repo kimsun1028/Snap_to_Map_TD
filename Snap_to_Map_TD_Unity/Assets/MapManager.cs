@@ -20,13 +20,13 @@ public class MapManager : MonoBehaviour
     public bool includeEndPoint = true;
     public bool preferJsonImageSize = true;
     public int backgroundSortingOrder = -10;
-    public int lineSortingOrder = 10;
-    
+
     [Header("Debug View")]
     public List<Vector3> worldWaypoints = new List<Vector3>();
 
     private LineRenderer lineRenderer;
     private SpriteRenderer backgroundRenderer;
+    private SnapToMapTD.PathMarkers pathMarkers;
 
     private void Awake()
     {
@@ -64,7 +64,10 @@ public class MapManager : MonoBehaviour
 
         try
         {
-            worldWaypoints.AddRange(loader.LoadWorldPath());
+            var rawData = loader.LoadRaw();
+            if (!string.IsNullOrEmpty(rawData.image_file))
+                backgroundFileName = rawData.image_file;
+            worldWaypoints.AddRange(loader.ConvertToWorld(rawData));
         }
         catch (Exception exception)
         {
@@ -72,8 +75,23 @@ public class MapManager : MonoBehaviour
             return;
         }
 
-        // 데이터가 잘 들어왔다면 LineRenderer로 시각화 강제 연동
         UpdateLineRenderer();
+
+        if (pathMarkers == null)
+            pathMarkers = GetComponentInChildren<SnapToMapTD.PathMarkers>();
+        pathMarkers?.UpdateMarkers();
+    }
+
+    private void UpdateLineRenderer()
+    {
+        if (lineRenderer == null)
+            lineRenderer = GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+            return;
+
+        lineRenderer.useWorldSpace = true;
+        lineRenderer.positionCount = worldWaypoints.Count;
+        lineRenderer.SetPositions(worldWaypoints.ToArray());
     }
 
     private void LoadAndApplyBackground()
@@ -127,36 +145,31 @@ public class MapManager : MonoBehaviour
 
     private SpriteRenderer EnsureBackgroundRenderer()
     {
-        Transform backgroundTransform = transform.Find("MapBackground");
-        if (backgroundTransform == null)
+        // 중복 MapBackground 제거 후 하나만 유지
+        SpriteRenderer found = null;
+        for (int i = transform.childCount - 1; i >= 0; i--)
         {
-            GameObject backgroundObject = new GameObject("MapBackground");
-            backgroundObject.transform.SetParent(transform, false);
-            backgroundTransform = backgroundObject.transform;
+            Transform child = transform.GetChild(i);
+            if (child.name != "MapBackground") continue;
+
+            if (found == null)
+            {
+                found = child.GetComponent<SpriteRenderer>();
+                if (found == null)
+                    found = child.gameObject.AddComponent<SpriteRenderer>();
+            }
+            else
+            {
+                if (Application.isPlaying) Destroy(child.gameObject);
+                else DestroyImmediate(child.gameObject);
+            }
         }
 
-        SpriteRenderer renderer = backgroundTransform.GetComponent<SpriteRenderer>();
-        if (renderer == null)
-        {
-            renderer = backgroundTransform.gameObject.AddComponent<SpriteRenderer>();
-        }
+        if (found != null) return found;
 
-        return renderer;
-    }
-
-    private void UpdateLineRenderer()
-    {
-        if (lineRenderer == null)
-        {
-            lineRenderer = GetComponent<LineRenderer>();
-        }
-
-        if (lineRenderer != null && worldWaypoints != null && worldWaypoints.Count > 0)
-        {
-            lineRenderer.sortingOrder = lineSortingOrder;
-            lineRenderer.positionCount = worldWaypoints.Count;
-            lineRenderer.SetPositions(worldWaypoints.ToArray());
-        }
+        GameObject go = new GameObject("MapBackground");
+        go.transform.SetParent(transform, false);
+        return go.AddComponent<SpriteRenderer>();
     }
 
     // 데이터가 너무 많으므로 Gizmos는 선(Line)만 얇게 그리도록 경량화

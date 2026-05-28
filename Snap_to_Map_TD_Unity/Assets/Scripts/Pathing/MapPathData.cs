@@ -27,6 +27,7 @@ namespace SnapToMapTD.Pathing
     [Serializable]
     public sealed class MapPathData
     {
+        public string image_file;
         public PathPoint start_point;
         public PathPoint end_point;
         public PathPoint image_size;
@@ -35,6 +36,7 @@ namespace SnapToMapTD.Pathing
 
     public static class MapPathJsonParser
     {
+        private static readonly Regex ImageFileRegex = new Regex("\"image_file\"\\s*:\\s*\"([^\"]+)\"", RegexOptions.Compiled);
         private static readonly Regex StartRegex = new Regex("\"start_point\"\\s*:\\s*\\[\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\]", RegexOptions.Compiled);
         private static readonly Regex EndRegex = new Regex("\"end_point\"\\s*:\\s*\\[\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\]", RegexOptions.Compiled);
         private static readonly Regex ImageSizeRegex = new Regex("\"image_size\"\\s*:\\s*\\[\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\]", RegexOptions.Compiled);
@@ -55,8 +57,10 @@ namespace SnapToMapTD.Pathing
                 throw new FormatException("Could not find start_point or end_point in the JSON text.");
             }
 
+            Match imageFileMatch = ImageFileRegex.Match(json);
             var data = new MapPathData
             {
+                image_file = imageFileMatch.Success ? imageFileMatch.Groups[1].Value : null,
                 start_point = new PathPoint(ParseInt(startMatch.Groups[1]), ParseInt(startMatch.Groups[2])),
                 end_point = new PathPoint(ParseInt(endMatch.Groups[1]), ParseInt(endMatch.Groups[2]))
             };

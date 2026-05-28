@@ -13,6 +13,9 @@ namespace SnapToMapTD
         [Header("Road Settings")]
         [SerializeField] private float roadWidth = 0.4f;
         [SerializeField] [Range(0.001f, 0.2f)] private float simplifyTolerance = 0.01f;
+
+        [Header("Visibility")]
+        [SerializeField] private bool showMesh = true;
         [SerializeField] private Color roadColor = new Color(0.9f, 0.75f, 0.3f, 0.55f);
         [SerializeField] private int sortingOrder = 5;
 
@@ -27,6 +30,12 @@ namespace SnapToMapTD
         {
             meshFilter = GetComponent<MeshFilter>();
             meshRenderer = GetComponent<MeshRenderer>();
+        }
+
+        private void Start()
+        {
+            // 런타임 시작 시 MapManager의 최종 worldWaypoints로 재생성
+            Generate();
         }
 
         private void OnValidate()
@@ -51,13 +60,14 @@ namespace SnapToMapTD
             if (simplified.Count < 2)
                 simplified = raw;
 
+            // 메시는 단순화된 포인트(성능), 콜라이더는 원본(LineRenderer와 일치)
             meshFilter.sharedMesh = BuildRoadMesh(simplified);
             Debug.Log($"[MapRoadGenerator] 원본 {raw.Count}pt → 단순화 {simplified.Count}pt");
 
             ApplyMaterial();
 
             if (generateCollider)
-                BuildCollider(simplified);
+                BuildCollider(raw);
         }
 
         private Mesh BuildRoadMesh(List<Vector3> points)
@@ -106,16 +116,46 @@ namespace SnapToMapTD
 
         private Vector3 GetPerpendicular(List<Vector3> pts, int i)
         {
-            Vector3 dir;
             if (i == 0)
-                dir = pts[1] - pts[0];
-            else if (i == pts.Count - 1)
-                dir = pts[i] - pts[i - 1];
-            else
-                dir = pts[i + 1] - pts[i - 1];
+            {
+                Vector3 d = (pts[1] - pts[0]).normalized;
+                return new Vector3(-d.y, d.x, 0f);
+            }
+            if (i == pts.Count - 1)
+            {
+                Vector3 d = (pts[i] - pts[i - 1]).normalized;
+                return new Vector3(-d.y, d.x, 0f);
+            }
 
-            dir.Normalize();
-            return new Vector3(-dir.y, dir.x, 0f);
+            // Miter joint: 앞뒤 세그먼트 법선의 평균 방향으로 오프셋
+            // 일정한 도로 폭을 유지하기 위해 cos(각도)로 보정하되
+            // 지나치게 날카로운 꺾임은 2배로 제한(miter limit)
+            Vector3 d1 = (pts[i] - pts[i - 1]).normalized;
+            Vector3 d2 = (pts[i + 1] - pts[i]).normalized;
+            Vector3 n1 = new Vector3(-d1.y, d1.x, 0f);
+            Vector3 n2 = new Vector3(-d2.y, d2.x, 0f);
+
+            Vector3 miter = (n1 + n2).normalized;
+            float cosA = Vector3.Dot(miter, n1);
+            float scale = Mathf.Min(1f / Mathf.Max(cosA, 0.5f), 2f);
+            return miter * scale;
+        }
+
+        private void ApplyMaterial()
+        {
+            if (meshRenderer == null) return;
+
+            meshRenderer.enabled = showMesh;
+
+            if (meshRenderer.sharedMaterial == null)
+            {
+                var mat = new Material(Shader.Find("Sprites/Default"));
+                mat.name = "RoadMaterial";
+                meshRenderer.sharedMaterial = mat;
+            }
+
+            meshRenderer.sharedMaterial.color = roadColor;
+            meshRenderer.sortingOrder = sortingOrder;
         }
 
         private void BuildCollider(List<Vector3> points)
@@ -145,19 +185,6 @@ namespace SnapToMapTD
             roadCollider.isTrigger = true;
         }
 
-        private void ApplyMaterial()
-        {
-            if (meshRenderer == null) return;
 
-            if (meshRenderer.sharedMaterial == null)
-            {
-                var mat = new Material(Shader.Find("Sprites/Default"));
-                mat.name = "RoadMaterial";
-                meshRenderer.sharedMaterial = mat;
-            }
-
-            meshRenderer.sharedMaterial.color = roadColor;
-            meshRenderer.sortingOrder = sortingOrder;
-        }
     }
 }

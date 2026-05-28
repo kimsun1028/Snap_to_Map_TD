@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SnapToMapTD.Enemies
 {
-    [RequireComponent(typeof(SpriteRenderer), typeof(Animator), typeof(Collider2D))]
+    [RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
     public class Enemy : MonoBehaviour
     {
         [Header("Stats")]
@@ -34,7 +34,7 @@ namespace SnapToMapTD.Enemies
         private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
-            animator = GetComponent<Animator>();
+            animator = GetComponent<Animator>(); // 없어도 동작
             currentHealth = maxHealth;
         }
 
@@ -45,7 +45,7 @@ namespace SnapToMapTD.Enemies
             if (waypoints.Count > 0)
                 transform.position = waypoints[0];
 
-            animator.SetBool(AnimIsWalking, true);
+            animator?.SetBool(AnimIsWalking, true);
         }
 
         private void Update()
@@ -59,10 +59,12 @@ namespace SnapToMapTD.Enemies
         private void MoveAlongPath()
         {
             Vector3 target = waypoints[waypointIndex];
-            Vector3 direction = target - transform.position;
 
-            if (Mathf.Abs(direction.x) > 0.01f)
-                spriteRenderer.flipX = direction.x < 0;
+            // 5개 앞 웨이포인트 방향으로 좌우 판단 → 미세한 지그재그에 흔들리지 않음
+            int lookAhead = Mathf.Min(waypointIndex + 15, waypoints.Count - 1);
+            float dx = waypoints[lookAhead].x - transform.position.x;
+            if (Mathf.Abs(dx) > 0.05f)
+                spriteRenderer.flipX = dx < 0;
 
             transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
 
@@ -82,14 +84,14 @@ namespace SnapToMapTD.Enemies
             if (currentHealth <= 0)
                 Die();
             else
-                animator.SetTrigger(AnimHurt);
+                animator?.SetTrigger(AnimHurt);
         }
 
         private void Die()
         {
             isDead = true;
-            animator.SetBool(AnimIsWalking, false);
-            animator.SetTrigger(AnimDeath);
+            animator?.SetBool(AnimIsWalking, false);
+            animator?.SetTrigger(AnimDeath);
             GetComponent<Collider2D>().enabled = false;
             OnDeath?.Invoke(this);
             Destroy(gameObject, 1.5f);

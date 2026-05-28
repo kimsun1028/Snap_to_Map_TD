@@ -1,7 +1,9 @@
 import cv2 as cv
 import numpy as np
 import json
-img = cv.imread("img.jpg", cv.IMREAD_GRAYSCALE)
+
+INPUT_IMAGE = "img1.jpg"
+img = cv.imread(INPUT_IMAGE, cv.IMREAD_GRAYSCALE)
 
 if img is None:
 	raise FileNotFoundError("Image not found: img.jpg")
@@ -322,6 +324,7 @@ else:
 		
 		# 경로 정보를 JSON으로 저장
 		path_data = {
+			"image_file": INPUT_IMAGE,
 			"start_point": list(actual_start),
 			"end_point": list(actual_end),
 			"image_size": [width, height],
