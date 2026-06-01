@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1677216617766489656}
   - component: {fileID: 6019983389458647849}
   - component: {fileID: 2209928109839166695}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Enemy_Prefeb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.15
 --- !u!114 &6019983389458647849
 MonoBehaviour:
   m_ObjectHideFlags: 0

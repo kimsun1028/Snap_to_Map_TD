@@ -7,7 +7,7 @@ namespace SnapToMapTD.Towers
     public class Tower : MonoBehaviour
     {
         [Header("Stats")]
-        [SerializeField] private float range = 2f;
+        [SerializeField] private float range = 0.5f;
         [SerializeField] private int damage = 20;
         [SerializeField] private float attackCooldown = 1f;
         [SerializeField] private int cost = 50;
@@ -45,6 +45,7 @@ namespace SnapToMapTD.Towers
         private Enemy FindNearestEnemy()
         {
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
+            Debug.Log($"[Tower] 탐색 hits: {hits.Length}, layer: {enemyLayer.value}, range: {range}");
             Enemy nearest = null;
             float nearestDist = float.MaxValue;
 
@@ -70,13 +71,14 @@ namespace SnapToMapTD.Towers
 
         private void Attack(Enemy target)
         {
-            animator.SetTrigger(AnimAttack);
+            if (animator.runtimeAnimatorController != null)
+                animator.SetTrigger(AnimAttack);
             target.TakeDamage(damage);
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
-            Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
+            Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
             Gizmos.DrawWireSphere(transform.position, range);
         }
     }

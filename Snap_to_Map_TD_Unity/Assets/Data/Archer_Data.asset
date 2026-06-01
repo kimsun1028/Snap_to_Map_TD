@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63003452bf0fb4d84a66e0c20ecbf3, type: 3}
+  m_Name: Archer_Data
+  m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.TowerData
+  towerName: Archer
+  prefab: {fileID: 4578730120719267617, guid: 4f84d3f3d0e439f4d890b239e3669439, type: 3}
+  icon: {fileID: 5420657165879536120, guid: de8866197ad530449a7c13cde27d6620, type: 3}
+  cost: 100
