@@ -104,7 +104,7 @@ Animator:
   m_GameObject: {fileID: 4578730120719267617}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 321dc40014d2b754b8423eaa84962bcd, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -165,9 +165,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.Tower
   range: 1
-  damage: 100
-  attackCooldown: 0.1
+  damage: 20
+  attackCooldown: 1
   cost: 100
+  skillDamage: 100
+  skillCooldown: 10
+  attackHitDelay: 0.3
+  skillHitDelay: 1.8
+  skillAnimDuration: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8

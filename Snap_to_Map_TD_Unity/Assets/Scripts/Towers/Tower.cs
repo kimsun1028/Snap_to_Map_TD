@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using SnapToMapTD.Enemies;
 
@@ -12,14 +13,25 @@ namespace SnapToMapTD.Towers
         [SerializeField] private float attackCooldown = 1f;
         [SerializeField] private int cost = 50;
 
+        [Header("Skill")]
+        [SerializeField] private int skillDamage = 80;
+        [SerializeField] private float skillCooldown = 5f;
+
+        [Header("Attack Timing")]
+        [SerializeField] private float attackHitDelay = 0.3f;
+        [SerializeField] private float skillHitDelay = 0.5f;
+        [SerializeField] private float skillAnimDuration = 1.5f;
+
         [Header("Targeting")]
         [SerializeField] private LayerMask enemyLayer;
 
         private Animator animator;
         private SpriteRenderer spriteRenderer;
         private float attackTimer;
+        private float skillTimer;
 
         private static readonly int AnimAttack = Animator.StringToHash("Attack");
+        private static readonly int AnimSkill = Animator.StringToHash("Skill");
 
         public int Cost => cost;
 
@@ -27,25 +39,48 @@ namespace SnapToMapTD.Towers
         {
             animator = GetComponent<Animator>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            skillTimer = skillCooldown;
         }
 
         private void Update()
         {
             attackTimer -= Time.deltaTime;
-            if (attackTimer > 0f) return;
+            skillTimer -= Time.deltaTime;
 
             Enemy target = FindNearestEnemy();
             if (target == null) return;
 
             FaceTarget(target.transform.position);
-            Attack(target);
-            attackTimer = attackCooldown;
+
+            if (skillTimer <= 0f)
+            {
+                if (animator.runtimeAnimatorController != null)
+                    animator.SetTrigger(AnimSkill);
+                StartCoroutine(DealDamageAfterDelay(target, skillDamage, skillHitDelay));
+                skillTimer = skillCooldown;
+                attackTimer = skillAnimDuration;
+                return;
+            }
+
+            if (attackTimer <= 0f)
+            {
+                if (animator.runtimeAnimatorController != null)
+                    animator.SetTrigger(AnimAttack);
+                StartCoroutine(DealDamageAfterDelay(target, damage, attackHitDelay));
+                attackTimer = attackCooldown;
+            }
+        }
+
+        private IEnumerator DealDamageAfterDelay(Enemy target, int dmg, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (target != null)
+                target.TakeDamage(dmg);
         }
 
         private Enemy FindNearestEnemy()
         {
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
-            Debug.Log($"[Tower] 탐색 hits: {hits.Length}, layer: {enemyLayer.value}, range: {range}");
             Enemy nearest = null;
             float nearestDist = float.MaxValue;
 
@@ -67,13 +102,6 @@ namespace SnapToMapTD.Towers
         private void FaceTarget(Vector3 targetPosition)
         {
             spriteRenderer.flipX = targetPosition.x < transform.position.x;
-        }
-
-        private void Attack(Enemy target)
-        {
-            if (animator.runtimeAnimatorController != null)
-                animator.SetTrigger(AnimAttack);
-            target.TakeDamage(damage);
         }
 
         private void OnDrawGizmos()

@@ -81,7 +81,6 @@ namespace SnapToMapTD.Enemies
             if (isDead) return;
 
             currentHealth -= amount;
-            Debug.Log($"[Enemy] HP: {currentHealth}/{maxHealth}");
             if (currentHealth <= 0)
                 Die();
             else

@@ -141,6 +141,32 @@ public class MapManager : MonoBehaviour
         Transform backgroundTransform = backgroundRenderer.transform;
         backgroundTransform.position = worldOrigin;
         backgroundTransform.localScale = Vector3.one;
+
+        if (Application.isPlaying)
+            FitCameraToMap(texture.width, texture.height);
+    }
+
+    private void FitCameraToMap(int imgWidth, int imgHeight)
+    {
+        Camera cam = Camera.main;
+        if (cam == null || !cam.orthographic) return;
+
+        float worldWidth = imgWidth / pixelsPerUnit;
+        float worldHeight = imgHeight / pixelsPerUnit;
+
+        // 좌우 15%씩 UI 여백, 맵은 중앙 70%에 표시
+        float mapScreenRatio = 0.7f;
+        float effectiveAspect = (float)Screen.width * mapScreenRatio / Screen.height;
+        float mapAspect = worldWidth / worldHeight;
+
+        cam.orthographicSize = effectiveAspect >= mapAspect
+            ? worldHeight / 2f
+            : worldWidth / (2f * effectiveAspect);
+
+        cam.transform.position = new Vector3(
+            worldOrigin.x,
+            worldOrigin.y,
+            cam.transform.position.z);
     }
 
     private SpriteRenderer EnsureBackgroundRenderer()
