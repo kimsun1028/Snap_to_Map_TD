@@ -33,10 +33,12 @@ namespace SnapToMapTD.Game
 
         [Header("Events")]
         public UnityEvent<int> onWaveStart;
+        public UnityEvent onWaveReady;
         public UnityEvent onAllWavesCleared;
 
         private int currentWave;
         private int activeEnemyCount;
+        private bool waveStartRequested;
 
         public int CurrentWave => currentWave;
         public int TotalWaves => waves.Length;
@@ -46,10 +48,19 @@ namespace SnapToMapTD.Game
             StartCoroutine(RunWaves());
         }
 
+        public void StartNextWave()
+        {
+            waveStartRequested = true;
+        }
+
         private IEnumerator RunWaves()
         {
             while (currentWave < waves.Length)
             {
+                waveStartRequested = false;
+                onWaveReady?.Invoke();
+                yield return new WaitUntil(() => waveStartRequested);
+
                 Wave wave = waves[currentWave];
                 yield return new WaitForSeconds(wave.delayBeforeWave);
 
@@ -65,7 +76,6 @@ namespace SnapToMapTD.Game
                 }
 
                 yield return new WaitUntil(() => activeEnemyCount <= 0);
-                yield return new WaitForSeconds(cooldownBetweenWaves);
                 currentWave++;
             }
 

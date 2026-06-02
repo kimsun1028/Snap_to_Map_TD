@@ -22,15 +22,24 @@ namespace SnapToMapTD.Towers
         [SerializeField] private float skillHitDelay = 0.5f;
         [SerializeField] private float skillAnimDuration = 1.5f;
 
+        [Header("Alternate Attack (Attack2)")]
+        [SerializeField] private bool alternateAttacks = false;
+        [SerializeField] private int damage2 = 10;
+        [SerializeField] private float damage2HitDelay1 = 0.2f;
+        [SerializeField] private float damage2HitDelay2 = 0.5f;
+
         [Header("Targeting")]
         [SerializeField] private LayerMask enemyLayer;
+        [SerializeField] private bool aoeAttack = false;
 
         private Animator animator;
         private SpriteRenderer spriteRenderer;
         private float attackTimer;
         private float skillTimer;
+        private bool useSecondAttack;
 
         private static readonly int AnimAttack = Animator.StringToHash("Attack");
+        private static readonly int AnimAttack2 = Animator.StringToHash("Attack2");
         private static readonly int AnimSkill = Animator.StringToHash("Skill");
 
         public int Cost => cost;
@@ -56,7 +65,15 @@ namespace SnapToMapTD.Towers
             {
                 if (animator.runtimeAnimatorController != null)
                     animator.SetTrigger(AnimSkill);
-                StartCoroutine(DealDamageAfterDelay(target, skillDamage, skillHitDelay));
+                if (aoeAttack)
+                {
+                    foreach (Enemy e in FindAllEnemiesInRange())
+                        StartCoroutine(DealDamageAfterDelay(e, skillDamage, skillHitDelay));
+                }
+                else
+                {
+                    StartCoroutine(DealDamageAfterDelay(target, skillDamage, skillHitDelay));
+                }
                 skillTimer = skillCooldown;
                 attackTimer = skillAnimDuration;
                 return;
@@ -64,9 +81,42 @@ namespace SnapToMapTD.Towers
 
             if (attackTimer <= 0f)
             {
-                if (animator.runtimeAnimatorController != null)
-                    animator.SetTrigger(AnimAttack);
-                StartCoroutine(DealDamageAfterDelay(target, damage, attackHitDelay));
+                if (alternateAttacks && useSecondAttack)
+                {
+                    if (animator.runtimeAnimatorController != null)
+                        animator.SetTrigger(AnimAttack2);
+                    if (aoeAttack)
+                    {
+                        foreach (Enemy e in FindAllEnemiesInRange())
+                        {
+                            StartCoroutine(DealDamageAfterDelay(e, damage2, damage2HitDelay1));
+                            StartCoroutine(DealDamageAfterDelay(e, damage2, damage2HitDelay2));
+                        }
+                    }
+                    else
+                    {
+                        StartCoroutine(DealDamageAfterDelay(target, damage2, damage2HitDelay1));
+                        StartCoroutine(DealDamageAfterDelay(target, damage2, damage2HitDelay2));
+                    }
+                }
+                else
+                {
+                    if (animator.runtimeAnimatorController != null)
+                        animator.SetTrigger(AnimAttack);
+                    if (aoeAttack)
+                    {
+                        foreach (Enemy e in FindAllEnemiesInRange())
+                            StartCoroutine(DealDamageAfterDelay(e, damage, attackHitDelay));
+                    }
+                    else
+                    {
+                        StartCoroutine(DealDamageAfterDelay(target, damage, attackHitDelay));
+                    }
+                }
+
+                if (alternateAttacks)
+                    useSecondAttack = !useSecondAttack;
+
                 attackTimer = attackCooldown;
             }
         }
@@ -76,6 +126,18 @@ namespace SnapToMapTD.Towers
             yield return new WaitForSeconds(delay);
             if (target != null)
                 target.TakeDamage(dmg);
+        }
+
+        private Enemy[] FindAllEnemiesInRange()
+        {
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
+            var result = new System.Collections.Generic.List<Enemy>();
+            foreach (Collider2D hit in hits)
+            {
+                Enemy e = hit.GetComponent<Enemy>();
+                if (e != null) result.Add(e);
+            }
+            return result.ToArray();
         }
 
         private Enemy FindNearestEnemy()
