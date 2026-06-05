@@ -2,17 +2,21 @@
 
 ## 진행 중
 
+- [ ] **버튼 클릭 범위 최종 적용 확인**
+  - ArcherButton / KnightButton 루트에 Image 컴포넌트 추가, Color Alpha=0, Raycast Target=✅
+  - IconImage → Raycast Target=❌
+  - CostText → Raycast Target=❌
+  - 원인: Icon.asset이 Archer-Idle.png 스프라이트시트의 100x100 프레임 전체를 사용 (실제 캐릭터는 26x21px)
+
+## 남은 것
+
+- [ ] **체력바 색 변경** - HP에 따라 색 변화 (초록 → 노랑 → 빨강)
+- [ ] **재시작 시 웨이브 시작 버튼 사라지는 문제** - SceneManager.LoadScene 후 WaveStartButton이 표시 안 됨. WaveManager RunWaves 코루틴 재시작 흐름 확인 필요
 - [ ] **Enemy 체력바 완성 확인**
   - 구조: Enemy_Prefeb > HealthBarCanvas(World Space) > Background > Fill
   - Fill 설정: Anchor=left-stretch, Pivot=(0, 0.5), Width=Background와 동일
   - HealthBar.cs: `SetSizeWithCurrentAnchors`로 너비 조절
   - 아직 정상 동작 확인 안됨
-
-## 남은 것
-
-- [ ] **체력바 색 변경** - HP에 따라 색 변화 (초록 → 노랑 → 빨강)
-- [ ] **아처 버튼에서 나이트 이미지 나오는 문제** - KnightButton의 TowerData가 잘못 연결된 것으로 추정 (런타임에 Archer 이미지로 바뀜)
-- [ ] **재시작 시 웨이브 시작 버튼 사라지는 문제** - SceneManager.LoadScene 후 WaveStartButton이 표시 안 됨. WaveManager RunWaves 코루틴 재시작 흐름 확인 필요
 
 ## 완료된 것
 
@@ -28,3 +32,6 @@
 - [x] Archer: 애니메이터 Idle/Attack01/Skill, CanTransitionToSelf 수정
 - [x] Knight: 애니메이터 Idle/Attack01/Attack02/Skill, 2교대 평타 + AoE
 - [x] HealthBar.cs 작성 완료
+- [x] 버튼 클릭 범위 오프셋 원인 분석 완료
+  - IconImage Raycast Target 끄기
+  - 루트 Image Alpha=0으로 투명 클릭 범위 설정

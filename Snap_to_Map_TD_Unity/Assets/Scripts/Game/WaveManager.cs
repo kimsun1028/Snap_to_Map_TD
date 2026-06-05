@@ -55,6 +55,7 @@ namespace SnapToMapTD.Game
 
         private IEnumerator RunWaves()
         {
+            yield return null; // WaveStartButton.Start()가 구독할 때까지 한 프레임 대기
             while (currentWave < waves.Length)
             {
                 waveStartRequested = false;
