@@ -151,7 +151,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.15
 --- !u!114 &8135811184883776813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,20 +164,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb49b49fb2d0d24b84ca2a8c0f7f0c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.Tower
-  range: 0.7
-  damage: 15
+  towerName: Knight
+  power: 10
+  range: 0.5
   attackCooldown: 1
   cost: 100
-  skillDamage: 40
+  attackRatio: 2
+  skillRatio: 8
+  attack2Ratio: 1.5
   skillCooldown: 8
   attackHitDelay: 0.3
   skillHitDelay: 0.5
   skillAnimDuration: 1.5
   alternateAttacks: 1
-  damage2: 10
   damage2HitDelay1: 0.2
   damage2HitDelay2: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
   aoeAttack: 1
+  maxLevel: 2
+  upgradeCost: 75
+  upgradePowerBonus: 5
+  upgradeRangeBonus: 0.2

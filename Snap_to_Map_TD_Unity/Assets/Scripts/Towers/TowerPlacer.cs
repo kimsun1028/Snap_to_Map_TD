@@ -1,10 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using SnapToMapTD.Game;
+using SnapToMapTD.UI;
+using SnapToMapTD;
 
 namespace SnapToMapTD.Towers
 {
     public class TowerPlacer : MonoBehaviour
     {
+        [SerializeField] private GameObject cancelButton;
+
         private GameObject selectedPrefab;
         private int selectedCost;
         private GameObject ghostInstance;
@@ -13,14 +19,21 @@ namespace SnapToMapTD.Towers
         private void Awake()
         {
             mainCamera = Camera.main;
+            if (cancelButton != null)
+            {
+                cancelButton.GetComponent<Button>()?.onClick.AddListener(Cancel);
+                cancelButton.SetActive(false);
+            }
         }
 
         public void SelectTower(TowerData data)
         {
+            TowerInfoPanel.Instance?.Hide();
             Cancel();
 
             selectedPrefab = data.prefab;
             selectedCost = data.cost;
+            cancelButton?.SetActive(true);
 
             ghostInstance = Instantiate(selectedPrefab);
             ghostInstance.name = "Ghost";
@@ -38,14 +51,25 @@ namespace SnapToMapTD.Towers
 
         private void Update()
         {
-            if (selectedPrefab == null) return;
+            if (selectedPrefab == null)
+            {
+                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+                {
+                    var hit = Physics2D.OverlapPoint(GetMouseWorldPos());
+                    if (hit != null && hit.GetComponent<Tower>() != null)
+                        TowerInfoPanel.Instance?.Show(hit.GetComponent<Tower>());
+                    else
+                        TowerInfoPanel.Instance?.Hide();
+                }
+                return;
+            }
 
             Vector3 worldPos = GetMouseWorldPos();
 
             if (ghostInstance != null)
                 ghostInstance.transform.position = worldPos;
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                 TryPlace(worldPos);
 
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
@@ -54,6 +78,12 @@ namespace SnapToMapTD.Towers
 
         private void TryPlace(Vector3 worldPos)
         {
+            if (IsOnRoad(worldPos))
+            {
+                Cancel();
+                return;
+            }
+
             if (GameManager.Instance == null || !GameManager.Instance.TrySpendGold(selectedCost))
             {
                 Debug.Log("[TowerPlacer] 골드 부족");
@@ -64,7 +94,17 @@ namespace SnapToMapTD.Towers
             Cancel();
         }
 
-        private void Cancel()
+        [SerializeField] private float placementCheckRadius = 0.3f;
+
+        private bool IsOnRoad(Vector3 worldPos)
+        {
+            foreach (var col in Physics2D.OverlapCircleAll(worldPos, placementCheckRadius))
+                if (col.GetComponent<MapRoadGenerator>() != null)
+                    return true;
+            return false;
+        }
+
+        public void Cancel()
         {
             if (ghostInstance != null)
             {
@@ -73,6 +113,7 @@ namespace SnapToMapTD.Towers
             }
             selectedPrefab = null;
             selectedCost = 0;
+            cancelButton?.SetActive(false);
         }
 
         private Vector3 GetMouseWorldPos()

@@ -164,15 +164,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb49b49fb2d0d24b84ca2a8c0f7f0c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.Tower
-  range: 1
-  damage: 20
+  towerName: Archer
+  power: 10
+  range: 2
   attackCooldown: 1
   cost: 100
-  skillDamage: 100
+  attackRatio: 2
+  skillRatio: 8
+  attack2Ratio: 2
   skillCooldown: 10
-  attackHitDelay: 0.3
+  attackHitDelay: 0.8
   skillHitDelay: 1.8
   skillAnimDuration: 2
+  alternateAttacks: 0
+  damage2HitDelay1: 0.2
+  damage2HitDelay2: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
+  aoeAttack: 0
+  maxLevel: 2
+  upgradeCost: 75
+  upgradePowerBonus: 5
+  upgradeRangeBonus: 0.2

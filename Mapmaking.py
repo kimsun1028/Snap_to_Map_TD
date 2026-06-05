@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 import json
 
-INPUT_IMAGE = "img3.jpg"
+INPUT_IMAGE = "img1.jpg"
 img = cv.imread(INPUT_IMAGE, cv.IMREAD_GRAYSCALE)
 img_color = cv.imread(INPUT_IMAGE)
 

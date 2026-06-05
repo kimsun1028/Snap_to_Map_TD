@@ -8,13 +8,18 @@ namespace SnapToMapTD.Towers
     public class Tower : MonoBehaviour
     {
         [Header("Stats")]
+        [SerializeField] private string towerName = "Tower";
+        [SerializeField] private float power = 10f;
         [SerializeField] private float range = 0.5f;
-        [SerializeField] private int damage = 20;
         [SerializeField] private float attackCooldown = 1f;
         [SerializeField] private int cost = 50;
 
+        [Header("Damage Ratios")]
+        [SerializeField] private float attackRatio = 2f;
+        [SerializeField] private float skillRatio = 8f;
+        [SerializeField] private float attack2Ratio = 1f;
+
         [Header("Skill")]
-        [SerializeField] private int skillDamage = 80;
         [SerializeField] private float skillCooldown = 5f;
 
         [Header("Attack Timing")]
@@ -24,7 +29,6 @@ namespace SnapToMapTD.Towers
 
         [Header("Alternate Attack (Attack2)")]
         [SerializeField] private bool alternateAttacks = false;
-        [SerializeField] private int damage2 = 10;
         [SerializeField] private float damage2HitDelay1 = 0.2f;
         [SerializeField] private float damage2HitDelay2 = 0.5f;
 
@@ -32,32 +36,70 @@ namespace SnapToMapTD.Towers
         [SerializeField] private LayerMask enemyLayer;
         [SerializeField] private bool aoeAttack = false;
 
+        [Header("Upgrade")]
+        [SerializeField] private int maxLevel = 2;
+        [SerializeField] private int upgradeCost = 75;
+        [SerializeField] private float upgradePowerBonus = 5f;
+        [SerializeField] private float upgradeRangeBonus = 0.2f;
+
         private Animator animator;
         private SpriteRenderer spriteRenderer;
         private float attackTimer;
         private float skillTimer;
         private bool useSecondAttack;
+        private bool hadTarget;
 
         private static readonly int AnimAttack = Animator.StringToHash("Attack");
         private static readonly int AnimAttack2 = Animator.StringToHash("Attack2");
         private static readonly int AnimSkill = Animator.StringToHash("Skill");
 
+        private int Damage => Mathf.RoundToInt(power * attackRatio);
+        private int SkillDamage => Mathf.RoundToInt(power * skillRatio);
+        private int Damage2 => Mathf.RoundToInt(power * attack2Ratio);
+
+        public string TowerName => towerName;
+        public float Power => power;
+        public float Range => range;
         public int Cost => cost;
+        public int Level { get; private set; } = 1;
+        public bool CanUpgrade => Level < maxLevel;
+        public int UpgradeCost => upgradeCost;
+        public int SellPrice => cost / 2;
+
+        public void Upgrade()
+        {
+            if (!CanUpgrade) return;
+            Level++;
+            power += upgradePowerBonus;
+            range += upgradeRangeBonus;
+        }
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            attackTimer = attackCooldown;
             skillTimer = skillCooldown;
         }
 
         private void Update()
         {
+            Enemy target = FindNearestEnemy();
+
+            if (target == null)
+            {
+                hadTarget = false;
+                return;
+            }
+
+            if (!hadTarget)
+            {
+                attackTimer = 0.05f;
+                hadTarget = true;
+            }
+
             attackTimer -= Time.deltaTime;
             skillTimer -= Time.deltaTime;
-
-            Enemy target = FindNearestEnemy();
-            if (target == null) return;
 
             FaceTarget(target.transform.position);
 
@@ -65,15 +107,7 @@ namespace SnapToMapTD.Towers
             {
                 if (animator.runtimeAnimatorController != null)
                     animator.SetTrigger(AnimSkill);
-                if (aoeAttack)
-                {
-                    foreach (Enemy e in FindAllEnemiesInRange())
-                        StartCoroutine(DealDamageAfterDelay(e, skillDamage, skillHitDelay));
-                }
-                else
-                {
-                    StartCoroutine(DealDamageAfterDelay(target, skillDamage, skillHitDelay));
-                }
+                StartCoroutine(SkillHitAfterDelay(skillHitDelay));
                 skillTimer = skillCooldown;
                 attackTimer = skillAnimDuration;
                 return;
@@ -89,14 +123,14 @@ namespace SnapToMapTD.Towers
                     {
                         foreach (Enemy e in FindAllEnemiesInRange())
                         {
-                            StartCoroutine(DealDamageAfterDelay(e, damage2, damage2HitDelay1));
-                            StartCoroutine(DealDamageAfterDelay(e, damage2, damage2HitDelay2));
+                            StartCoroutine(DealDamageAfterDelay(e, Damage2, damage2HitDelay1));
+                            StartCoroutine(DealDamageAfterDelay(e, Damage2, damage2HitDelay2));
                         }
                     }
                     else
                     {
-                        StartCoroutine(DealDamageAfterDelay(target, damage2, damage2HitDelay1));
-                        StartCoroutine(DealDamageAfterDelay(target, damage2, damage2HitDelay2));
+                        StartCoroutine(DealDamageAfterDelay(target, Damage2, damage2HitDelay1));
+                        StartCoroutine(DealDamageAfterDelay(target, Damage2, damage2HitDelay2));
                     }
                 }
                 else
@@ -106,11 +140,11 @@ namespace SnapToMapTD.Towers
                     if (aoeAttack)
                     {
                         foreach (Enemy e in FindAllEnemiesInRange())
-                            StartCoroutine(DealDamageAfterDelay(e, damage, attackHitDelay));
+                            StartCoroutine(DealDamageAfterDelay(e, Damage, attackHitDelay));
                     }
                     else
                     {
-                        StartCoroutine(DealDamageAfterDelay(target, damage, attackHitDelay));
+                        StartCoroutine(DealDamageAfterDelay(target, Damage, attackHitDelay));
                     }
                 }
 
@@ -121,10 +155,27 @@ namespace SnapToMapTD.Towers
             }
         }
 
+        private IEnumerator SkillHitAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (aoeAttack)
+            {
+                foreach (Enemy e in FindAllEnemiesInRange())
+                    e.TakeDamage(SkillDamage);
+            }
+            else
+            {
+                Enemy hit = FindNearestEnemy();
+                if (hit != null)
+                    hit.TakeDamage(SkillDamage);
+            }
+        }
+
         private IEnumerator DealDamageAfterDelay(Enemy target, int dmg, float delay)
         {
             yield return new WaitForSeconds(delay);
-            if (target != null)
+            if (target == null) yield break;
+            if (Vector2.Distance(transform.position, target.transform.position) <= range * 1.5f)
                 target.TakeDamage(dmg);
         }
 
