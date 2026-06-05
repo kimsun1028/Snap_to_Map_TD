@@ -2,21 +2,13 @@
 
 ## 진행 중
 
-- [ ] **버튼 클릭 범위 최종 적용 확인**
-  - ArcherButton / KnightButton 루트에 Image 컴포넌트 추가, Color Alpha=0, Raycast Target=✅
-  - IconImage → Raycast Target=❌
-  - CostText → Raycast Target=❌
-  - 원인: Icon.asset이 Archer-Idle.png 스프라이트시트의 100x100 프레임 전체를 사용 (실제 캐릭터는 26x21px)
+없음
 
 ## 남은 것
 
-- [ ] **체력바 색 변경** - HP에 따라 색 변화 (초록 → 노랑 → 빨강)
-- [ ] **재시작 시 웨이브 시작 버튼 사라지는 문제** - SceneManager.LoadScene 후 WaveStartButton이 표시 안 됨. WaveManager RunWaves 코루틴 재시작 흐름 확인 필요
-- [ ] **Enemy 체력바 완성 확인**
-  - 구조: Enemy_Prefeb > HealthBarCanvas(World Space) > Background > Fill
-  - Fill 설정: Anchor=left-stretch, Pivot=(0, 0.5), Width=Background와 동일
-  - HealthBar.cs: `SetSizeWithCurrentAnchors`로 너비 조절
-  - 아직 정상 동작 확인 안됨
+- [ ] **경로 위 타워 설치 차단** - MapRoadGenerator의 PolygonCollider2D(isTrigger)를 활용해 TowerPlacer에서 경로 위 배치 불가 처리
+- [ ] **취소(휴지통) 버튼** - 타워 선택 후 휴지통 버튼 클릭 시 배치 취소, 고스트 제거
+- [ ] **배치된 타워 클릭 UI** - 타워 클릭 시 강화/판매 패널 표시
 
 ## 완료된 것
 
@@ -32,6 +24,7 @@
 - [x] Archer: 애니메이터 Idle/Attack01/Skill, CanTransitionToSelf 수정
 - [x] Knight: 애니메이터 Idle/Attack01/Attack02/Skill, 2교대 평타 + AoE
 - [x] HealthBar.cs 작성 완료
-- [x] 버튼 클릭 범위 오프셋 원인 분석 완료
-  - IconImage Raycast Target 끄기
-  - 루트 Image Alpha=0으로 투명 클릭 범위 설정
+- [x] 버튼 클릭 범위 최종 적용 완료
+- [x] 체력바 색 빨강 고정
+- [x] 재시작 시 웨이브 시작 버튼 문제 해결
+- [x] Enemy 체력바 정상 동작 확인

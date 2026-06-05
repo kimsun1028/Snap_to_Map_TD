@@ -2,8 +2,9 @@ import cv2 as cv
 import numpy as np
 import json
 
-INPUT_IMAGE = "img1.jpg"
+INPUT_IMAGE = "img3.jpg"
 img = cv.imread(INPUT_IMAGE, cv.IMREAD_GRAYSCALE)
+img_color = cv.imread(INPUT_IMAGE)
 
 if img is None:
 	raise FileNotFoundError("Image not found: img.jpg")
@@ -16,7 +17,10 @@ if max_dim > 1200:
 	new_width = int(width * scale)
 	new_height = int(height * scale)
 	img = cv.resize(img, (new_width, new_height), interpolation=cv.INTER_AREA)
-	print(f"이미지 크기 조정: {width}x{height} -> {new_width}x{new_height}")
+	if img_color is not None:
+		img_color = cv.resize(img_color, (new_width, new_height), interpolation=cv.INTER_AREA)
+	width, height = new_width, new_height
+	print(f"이미지 크기 조정: {new_width}x{new_height}")
 
 
 def clamp(value, low, high):
@@ -322,9 +326,11 @@ else:
 				print("경로 2를 contour에서 추출하지 못했습니다. 기존 path를 사용합니다.")
 				selected_path_points = path
 		
+		OUTPUT_IMAGE = "Background.jpg"
+
 		# 경로 정보를 JSON으로 저장
 		path_data = {
-			"image_file": INPUT_IMAGE,
+			"image_file": OUTPUT_IMAGE,
 			"start_point": list(actual_start),
 			"end_point": list(actual_end),
 			"image_size": [width, height],
@@ -341,6 +347,23 @@ else:
 		with open("path_data.json", "w") as f:
 			json.dump(path_data, f, indent=2)
 		print("경로 정보가 'path_data.json'에 저장되었습니다.")
+
+		# StreamingAssets에 자동 복사
+		import shutil, os
+		script_dir = os.path.dirname(os.path.abspath(__file__))
+		streaming_assets = os.path.join(script_dir, "Snap_to_Map_TD_Unity", "Assets", "StreamingAssets")
+		if os.path.isdir(streaming_assets):
+			json_src = os.path.join(script_dir, "path_data.json")
+			shutil.copy(json_src, os.path.join(streaming_assets, "path_data.json"))
+			dest_image = os.path.join(streaming_assets, OUTPUT_IMAGE)
+			if img_color is not None:
+				result = cv.imwrite(dest_image, img_color)
+				print(f"이미지 저장 {'성공' if result else '실패'}: {dest_image}")
+			else:
+				shutil.copy(os.path.join(script_dir, INPUT_IMAGE), dest_image)
+			print(f"StreamingAssets에 자동 복사 완료: path_data.json, {OUTPUT_IMAGE}")
+		else:
+			print(f"StreamingAssets 폴더 없음: {streaming_assets}")
 		
 		# TXT 파일로도 저장 (간단한 형식)
 		with open("path_data.txt", "w") as f:
