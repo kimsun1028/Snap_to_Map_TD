@@ -157,12 +157,12 @@ TextureImporter:
       name: Werewolf-Death_0
       rect:
         serializedVersion: 2
-        x: 41
-        y: 42
-        width: 29
-        height: 18
+        x: 0
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -179,12 +179,12 @@ TextureImporter:
       name: Werewolf-Death_1
       rect:
         serializedVersion: 2
-        x: 138
-        y: 44
-        width: 30
-        height: 19
+        x: 100
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -201,12 +201,12 @@ TextureImporter:
       name: Werewolf-Death_2
       rect:
         serializedVersion: 2
-        x: 233
-        y: 45
-        width: 18
-        height: 15
+        x: 200
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -223,12 +223,12 @@ TextureImporter:
       name: Werewolf-Death_3
       rect:
         serializedVersion: 2
-        x: 252
-        y: 42
-        width: 15
-        height: 8
+        x: 300
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -241,55 +241,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Werewolf-Death_4
-      rect:
-        serializedVersion: 2
-        x: 331
-        y: 42
-        width: 18
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 958565a16935617e0800000000000000
-      internalID: -1795155497308497831
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Werewolf-Death_5
-      rect:
-        serializedVersion: 2
-        x: 352
-        y: 42
-        width: 15
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 62b5676e925f90530800000000000000
-      internalID: 3821855319109557030
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: cc37e65c5624d6f4b87b401c36e823a3
     internalID: 0
     vertices: []
     indices: 
@@ -297,14 +253,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":100.0,"y":100.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Werewolf-Death_0: 2221069426256087011
       Werewolf-Death_1: -1686352667755371474
       Werewolf-Death_2: -1652063477230099908
       Werewolf-Death_3: -2828597431263079165
-      Werewolf-Death_4: -1795155497308497831
-      Werewolf-Death_5: 3821855319109557030
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

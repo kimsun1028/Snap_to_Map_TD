@@ -14,6 +14,7 @@ namespace SnapToMapTD.Enemies
         private float baseSpeed;
         [SerializeField] private int maxHealth = 100;
         [SerializeField] private int goldReward = 10;
+        [SerializeField] private int livesToLose = 1;
 
         public event Action<Enemy> OnDeath;
         public event Action<Enemy> OnReachEnd;
@@ -34,6 +35,7 @@ namespace SnapToMapTD.Enemies
         public int CurrentHealth => currentHealth;
         public float NormalizedHealth => (float)currentHealth / maxHealth;
         public float MoveSpeed => moveSpeed;
+        public int LivesTolLose => livesToLose;
         public int GoldReward => goldReward;
 
         private void Awake()

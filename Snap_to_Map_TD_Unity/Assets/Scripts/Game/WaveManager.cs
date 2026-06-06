@@ -8,12 +8,18 @@ using SnapToMapTD.Enemies;
 namespace SnapToMapTD.Game
 {
     [Serializable]
-    public struct WaveEntry
+    public struct EnemySpawn
     {
         public GameObject enemyPrefab;
         public int count;
         public float spawnInterval;
-        public float delayAfterGroup;
+    }
+
+    [Serializable]
+    public struct WaveEntry
+    {
+        public EnemySpawn[] enemies;
+        public float delayAfterEntry;
     }
 
     [Serializable]
@@ -79,21 +85,29 @@ namespace SnapToMapTD.Game
 
                 foreach (WaveEntry entry in wave.entries)
                 {
-                    for (int i = 0; i < entry.count; i++)
-                    {
-                        SpawnEnemy(entry.enemyPrefab);
-                        if (i < entry.count - 1)
-                            yield return new WaitForSeconds(entry.spawnInterval);
-                    }
-                    if (entry.delayAfterGroup > 0f)
-                        yield return new WaitForSeconds(entry.delayAfterGroup);
+                    foreach (EnemySpawn spawn in entry.enemies)
+                        StartCoroutine(SpawnEnemies(spawn));
+
+                    if (entry.delayAfterEntry > 0f)
+                        yield return new WaitForSeconds(entry.delayAfterEntry);
                 }
 
+                yield return new WaitUntil(() => activeEnemyCount > 0);
                 yield return new WaitUntil(() => activeEnemyCount <= 0);
                 currentWave++;
             }
 
             onAllWavesCleared?.Invoke();
+        }
+
+        private IEnumerator SpawnEnemies(EnemySpawn spawn)
+        {
+            for (int i = 0; i < spawn.count; i++)
+            {
+                SpawnEnemy(spawn.enemyPrefab);
+                if (i < spawn.count - 1)
+                    yield return new WaitForSeconds(spawn.spawnInterval);
+            }
         }
 
         private void SpawnEnemy(GameObject prefab)
@@ -119,7 +133,8 @@ namespace SnapToMapTD.Game
         private void HandleEnemyReachEnd(Enemy enemy)
         {
             activeEnemyCount--;
-            GameManager.Instance?.LoseLife();
+            for (int i = 0; i < enemy.LivesTolLose; i++)
+                GameManager.Instance?.LoseLife();
         }
     }
 }

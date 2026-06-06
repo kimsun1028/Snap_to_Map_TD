@@ -12,6 +12,7 @@ namespace SnapToMapTD.UI
         [SerializeField] private TextMeshProUGUI hpText;
         [SerializeField] private TextMeshProUGUI speedText;
         [SerializeField] private TextMeshProUGUI goldText;
+        [SerializeField] private TextMeshProUGUI livesText;
 
         private Enemy trackedEnemy;
 
@@ -39,6 +40,8 @@ namespace SnapToMapTD.UI
             speedText.text = $"Speed  {enemy.MoveSpeed:0.#}";
             goldText.text = $"Gold  +{enemy.GoldReward}G";
             hpText.text = $"HP  {enemy.CurrentHealth} / {enemy.MaxHealth}";
+            if (livesText != null)
+                livesText.text = $"Life  {enemy.LivesTolLose}";
             gameObject.SetActive(true);
         }
 

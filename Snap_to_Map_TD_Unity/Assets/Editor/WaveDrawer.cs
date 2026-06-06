@@ -6,24 +6,20 @@ using SnapToMapTD.Game;
 public class WaveDrawer : PropertyDrawer
 {
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
+        => EditorGUI.GetPropertyHeight(property, label, true);
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         int index = ParseArrayIndex(property.propertyPath);
-        GUIContent displayLabel = index >= 0 ? new GUIContent($"Wave {index + 1}") : label;
-        EditorGUI.PropertyField(position, property, displayLabel, true);
+        EditorGUI.PropertyField(position, property, index >= 0 ? new GUIContent($"Wave {index + 1}") : label, true);
     }
 
-    internal static int ParseArrayIndex(string propertyPath)
+    internal static int ParseArrayIndex(string path)
     {
-        int open = propertyPath.LastIndexOf('[');
-        int close = propertyPath.LastIndexOf(']');
-        if (open >= 0 && close > open &&
-            int.TryParse(propertyPath.Substring(open + 1, close - open - 1), out int index))
-            return index;
+        int open = path.LastIndexOf('[');
+        int close = path.LastIndexOf(']');
+        if (open >= 0 && close > open && int.TryParse(path.Substring(open + 1, close - open - 1), out int i))
+            return i;
         return -1;
     }
 }
@@ -32,14 +28,24 @@ public class WaveDrawer : PropertyDrawer
 public class WaveEntryDrawer : PropertyDrawer
 {
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
+        => EditorGUI.GetPropertyHeight(property, label, true);
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         int index = WaveDrawer.ParseArrayIndex(property.propertyPath);
-        GUIContent displayLabel = index >= 0 ? new GUIContent($"Entry {index + 1}") : label;
-        EditorGUI.PropertyField(position, property, displayLabel, true);
+        EditorGUI.PropertyField(position, property, index >= 0 ? new GUIContent($"Entry {index + 1}") : label, true);
+    }
+}
+
+[CustomPropertyDrawer(typeof(EnemySpawn))]
+public class EnemySpawnDrawer : PropertyDrawer
+{
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        => EditorGUI.GetPropertyHeight(property, label, true);
+
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        int index = WaveDrawer.ParseArrayIndex(property.propertyPath);
+        EditorGUI.PropertyField(position, property, index >= 0 ? new GUIContent($"Enemy {index + 1}") : label, true);
     }
 }

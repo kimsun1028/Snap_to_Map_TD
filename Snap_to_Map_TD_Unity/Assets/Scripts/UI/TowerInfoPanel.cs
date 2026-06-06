@@ -62,6 +62,7 @@ namespace SnapToMapTD.UI
 
         public void ShowPreview(TowerData data)
         {
+            EnemyInfoPanel.Instance?.Hide();
             isPreview = true;
             SetStatsVisible(false);
             SetDescriptionVisible(true);
@@ -78,6 +79,7 @@ namespace SnapToMapTD.UI
             if (selectedTower != null)
             {
                 SetStatsVisible(true);
+                SetDescriptionVisible(false);
                 Refresh();
                 rangeIndicator?.Show(selectedTower.transform.position, selectedTower.Range);
             }
