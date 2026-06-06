@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a27d8761aa656c348a9f6a93c97b1daf
+guid: 15652012540afa94a859c4f1a6f0ecdd
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -52,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -111,45 +111,6 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -157,10 +118,10 @@ TextureImporter:
       name: Priest-Idle_0
       rect:
         serializedVersion: 2
-        x: 43
-        y: 41
-        width: 18
-        height: 22
+        x: 42
+        y: 39
+        width: 19
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,10 +140,10 @@ TextureImporter:
       name: Priest-Idle_1
       rect:
         serializedVersion: 2
-        x: 143
-        y: 41
-        width: 18
-        height: 22
+        x: 142
+        y: 39
+        width: 19
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -201,10 +162,10 @@ TextureImporter:
       name: Priest-Idle_2
       rect:
         serializedVersion: 2
-        x: 243
-        y: 42
-        width: 18
-        height: 22
+        x: 242
+        y: 39
+        width: 19
+        height: 25
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -223,10 +184,10 @@ TextureImporter:
       name: Priest-Idle_3
       rect:
         serializedVersion: 2
-        x: 343
-        y: 42
-        width: 18
-        height: 22
+        x: 342
+        y: 39
+        width: 19
+        height: 25
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -245,10 +206,10 @@ TextureImporter:
       name: Priest-Idle_4
       rect:
         serializedVersion: 2
-        x: 443
-        y: 42
-        width: 18
-        height: 21
+        x: 442
+        y: 39
+        width: 19
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -267,10 +228,10 @@ TextureImporter:
       name: Priest-Idle_5
       rect:
         serializedVersion: 2
-        x: 543
-        y: 42
-        width: 18
-        height: 21
+        x: 542
+        y: 39
+        width: 19
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

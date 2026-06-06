@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 126f103a0c1ba344f97945020c7257c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Enemies.Enemy
+  enemyName: Orc
   moveSpeed: 1
   maxHealth: 40
   goldReward: 20

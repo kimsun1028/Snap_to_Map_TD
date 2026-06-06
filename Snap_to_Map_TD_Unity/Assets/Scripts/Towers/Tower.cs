@@ -7,6 +7,9 @@ namespace SnapToMapTD.Towers
     [RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
     public class Tower : MonoBehaviour
     {
+        [Header("Data")]
+        [SerializeField] private TowerData towerData;
+
         [Header("Stats")]
         [SerializeField] private string towerName = "Tower";
         [SerializeField] private float power = 10f;
@@ -58,6 +61,7 @@ namespace SnapToMapTD.Towers
         private int Damage2 => Mathf.RoundToInt(power * attack2Ratio);
 
         public string TowerName => towerName;
+        public TowerData Data => towerData;
         public float Power => power;
         public float Range => range;
         public int Cost => cost;
@@ -65,6 +69,8 @@ namespace SnapToMapTD.Towers
         public bool CanUpgrade => Level < maxLevel;
         public int UpgradeCost => upgradeCost;
         public int SellPrice => cost / 2;
+        public float SkillCooldown => skillCooldown;
+        public float SkillTimeRemaining => Mathf.Max(0f, skillTimer);
 
         public void Upgrade()
         {
@@ -86,6 +92,8 @@ namespace SnapToMapTD.Towers
         {
             Enemy target = FindNearestEnemy();
 
+            skillTimer -= Time.deltaTime;
+
             if (target == null)
             {
                 hadTarget = false;
@@ -99,7 +107,6 @@ namespace SnapToMapTD.Towers
             }
 
             attackTimer -= Time.deltaTime;
-            skillTimer -= Time.deltaTime;
 
             FaceTarget(target.transform.position);
 

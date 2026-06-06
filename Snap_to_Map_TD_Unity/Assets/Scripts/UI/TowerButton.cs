@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using SnapToMapTD.Towers;
 
 namespace SnapToMapTD.UI
 {
-    public class TowerButton : MonoBehaviour
+    public class TowerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private TowerData towerData;
         [SerializeField] private TowerPlacer placer;
@@ -27,6 +28,17 @@ namespace SnapToMapTD.UI
         {
             if (towerData != null && placer != null)
                 placer.SelectTower(towerData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (towerData != null)
+                TowerInfoPanel.Instance?.ShowPreview(towerData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            TowerInfoPanel.Instance?.HidePreview();
         }
     }
 }

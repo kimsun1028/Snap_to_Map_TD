@@ -17,8 +17,14 @@ namespace SnapToMapTD.UI
         [SerializeField] private TextMeshProUGUI upgradeText;
         [SerializeField] private Button upgradeButton;
         [SerializeField] private RangeIndicator rangeIndicator;
+        [SerializeField] private TextMeshProUGUI descriptionText;
+        [SerializeField] private TextMeshProUGUI skillDescriptionText;
+        [SerializeField] private TextMeshProUGUI skillCooldownText;
+        [SerializeField] private GameObject statsSection;
+        [SerializeField] private GameObject descriptionSection;
 
         private Tower selectedTower;
+        private bool isPreview;
 
         private void Awake()
         {
@@ -26,16 +32,54 @@ namespace SnapToMapTD.UI
             gameObject.SetActive(false);
         }
 
+        private void Update()
+        {
+            if (isPreview || selectedTower == null || skillCooldownText == null) return;
+            skillCooldownText.text = $"Skill CD  {selectedTower.SkillTimeRemaining:0.0}s / {selectedTower.SkillCooldown:0.0}s";
+        }
+
         public void Show(Tower tower)
         {
+            EnemyInfoPanel.Instance?.Hide();
+            isPreview = false;
             selectedTower = tower;
+            SetStatsVisible(true);
+            SetDescriptionVisible(false);
             Refresh();
             gameObject.SetActive(true);
             rangeIndicator?.Show(tower.transform.position, tower.Range);
         }
 
+        public void ShowPreview(TowerData data)
+        {
+            isPreview = true;
+            SetStatsVisible(false);
+            SetDescriptionVisible(true);
+            rangeIndicator?.Hide();
+            towerNameText.text = data.towerName;
+            if (descriptionText != null) descriptionText.text = data.description;
+            if (skillDescriptionText != null) skillDescriptionText.text = data.skillDescription;
+            gameObject.SetActive(true);
+        }
+
+        public void HidePreview()
+        {
+            isPreview = false;
+            if (selectedTower != null)
+            {
+                SetStatsVisible(true);
+                Refresh();
+                rangeIndicator?.Show(selectedTower.transform.position, selectedTower.Range);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
         public void Hide()
         {
+            isPreview = false;
             selectedTower = null;
             gameObject.SetActive(false);
             rangeIndicator?.Hide();
@@ -57,6 +101,16 @@ namespace SnapToMapTD.UI
             Hide();
         }
 
+        private void SetStatsVisible(bool visible)
+        {
+            if (statsSection != null) statsSection.SetActive(visible);
+        }
+
+        private void SetDescriptionVisible(bool visible)
+        {
+            if (descriptionSection != null) descriptionSection.SetActive(visible);
+        }
+
         private void Refresh()
         {
             if (selectedTower == null) return;
@@ -64,6 +118,10 @@ namespace SnapToMapTD.UI
             levelText.text = $"Lv {selectedTower.Level}";
             powerText.text = $"Power {selectedTower.Power:0}";
             sellText.text = $"Sell +{selectedTower.SellPrice}G";
+
+            var data = selectedTower.Data;
+            if (descriptionText != null) descriptionText.text = data != null ? data.description : "";
+            if (skillDescriptionText != null) skillDescriptionText.text = data != null ? data.skillDescription : "";
 
             if (selectedTower.CanUpgrade)
             {

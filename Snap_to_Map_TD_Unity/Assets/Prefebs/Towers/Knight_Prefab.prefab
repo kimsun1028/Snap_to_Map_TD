@@ -89,7 +89,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.28, y: 0.23}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb49b49fb2d0d24b84ca2a8c0f7f0c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.Tower
+  towerData: {fileID: 11400000, guid: 32fda9e4662ce4a4aacd4d4f58e38214, type: 2}
   towerName: Knight
   power: 10
   range: 0.5

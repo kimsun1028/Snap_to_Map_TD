@@ -8,6 +8,7 @@ namespace SnapToMapTD.Enemies
     public class Enemy : MonoBehaviour
     {
         [Header("Stats")]
+        [SerializeField] private string enemyName = "Enemy";
         [SerializeField] private float moveSpeed = 2f;
         [SerializeField] private int maxHealth = 100;
         [SerializeField] private int goldReward = 10;
@@ -26,9 +27,11 @@ namespace SnapToMapTD.Enemies
         private static readonly int AnimHurt = Animator.StringToHash("Hurt");
         private static readonly int AnimDeath = Animator.StringToHash("Death");
 
+        public string EnemyName => enemyName;
         public int MaxHealth => maxHealth;
         public int CurrentHealth => currentHealth;
         public float NormalizedHealth => (float)currentHealth / maxHealth;
+        public float MoveSpeed => moveSpeed;
         public int GoldReward => goldReward;
 
         private void Awake()
@@ -74,6 +77,13 @@ namespace SnapToMapTD.Enemies
                 if (waypointIndex >= waypoints.Count)
                     ReachEnd();
             }
+        }
+
+        private void OnMouseDown()
+        {
+            if (isDead) return;
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+            SnapToMapTD.UI.EnemyInfoPanel.Instance?.Show(this);
         }
 
         public void TakeDamage(int amount)

@@ -9,5 +9,7 @@ namespace SnapToMapTD.Towers
         public GameObject prefab;
         public Sprite icon;
         public int cost;
+        [TextArea(2, 4)] public string description = "";
+        [TextArea(2, 4)] public string skillDescription = "";
     }
 }

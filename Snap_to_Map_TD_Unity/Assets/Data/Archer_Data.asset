@@ -16,3 +16,5 @@ MonoBehaviour:
   prefab: {fileID: 4578730120719267617, guid: 4f84d3f3d0e439f4d890b239e3669439, type: 3}
   icon: {fileID: 5420657165879536120, guid: de8866197ad530449a7c13cde27d6620, type: 3}
   cost: 100
+  description: ArcherDescription
+  skillDescription: ArcherSkill
