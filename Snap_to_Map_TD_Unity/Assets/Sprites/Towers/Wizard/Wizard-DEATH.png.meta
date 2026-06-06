@@ -151,12 +151,12 @@ TextureImporter:
       name: Wizard-DEATH_0
       rect:
         serializedVersion: 2
-        x: 41
-        y: 42
-        width: 19
-        height: 20
+        x: 0
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -173,12 +173,12 @@ TextureImporter:
       name: Wizard-DEATH_1
       rect:
         serializedVersion: 2
-        x: 141
-        y: 42
-        width: 19
-        height: 19
+        x: 100
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -195,12 +195,12 @@ TextureImporter:
       name: Wizard-DEATH_2
       rect:
         serializedVersion: 2
-        x: 243
-        y: 42
-        width: 22
-        height: 17
+        x: 200
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -217,12 +217,12 @@ TextureImporter:
       name: Wizard-DEATH_3
       rect:
         serializedVersion: 2
-        x: 344
-        y: 41
-        width: 32
-        height: 13
+        x: 300
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -239,7 +239,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 01a806a5fb98f4a4d9de6176cc476ebd
     internalID: 0
     vertices: []
     indices: 
@@ -247,7 +247,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":100.0,"y":100.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Wizard-DEATH_0: -3242509988130999345
       Wizard-DEATH_1: 5907462439045272345

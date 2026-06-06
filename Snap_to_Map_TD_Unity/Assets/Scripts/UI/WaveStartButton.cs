@@ -24,6 +24,7 @@ namespace SnapToMapTD.UI
 
         public void OnClick()
         {
+            Hide();
             waveManager.StartNextWave();
         }
     }

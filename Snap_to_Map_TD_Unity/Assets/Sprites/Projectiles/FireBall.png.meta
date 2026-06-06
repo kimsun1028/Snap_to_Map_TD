@@ -1,25 +1,28 @@
 fileFormatVersion: 2
-guid: 7ffeb6b82efeeea4abe7650de5c95b03
+guid: ed1819335b8de1148a846bbcf483c602
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7854738478779454800
-    second: Slime-Idle_0
+      213: -8704788006095434069
+    second: Wizard-Attack02_Effect_0
   - first:
-      213: 7952265997143392756
-    second: Slime-Idle_1
+      213: -9021240426557340010
+    second: Wizard-Attack02_Effect_1
   - first:
-      213: 6747045714855932814
-    second: Slime-Idle_2
+      213: -5664696737552727421
+    second: Wizard-Attack02_Effect_2
   - first:
-      213: -3550793042933452877
-    second: Slime-Idle_3
+      213: 8255064088849822949
+    second: Wizard-Attack02_Effect_3
   - first:
-      213: -6526498319472173233
-    second: Slime-Idle_4
+      213: -3999153236474238800
+    second: Wizard-Attack02_Effect_4
   - first:
-      213: -4731837845194634399
-    second: Slime-Idle_5
+      213: 1398131438533898835
+    second: Wizard-Attack02_Effect_5
+  - first:
+      213: 621050465156124948
+    second: Wizard-Attack02_Effect_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -111,176 +114,159 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Slime-Idle_0
+      name: Wizard-Attack02_Effect_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 42
-        width: 25
-        height: 13
+        x: 0
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0ba22c048fc5ef290800000000000000
-      internalID: -7854738478779454800
+      spriteID: baec99bad61623780800000000000000
+      internalID: -8704788006095434069
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime-Idle_1
+      name: Wizard-Attack02_Effect_1
       rect:
         serializedVersion: 2
-        x: 136
-        y: 42
-        width: 25
-        height: 17
+        x: 100
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4f1462f9acf1c5e60800000000000000
-      internalID: 7952265997143392756
+      spriteID: 69608ade0ad1ec280800000000000000
+      internalID: -9021240426557340010
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime-Idle_2
+      name: Wizard-Attack02_Effect_2
       rect:
         serializedVersion: 2
-        x: 236
-        y: 42
-        width: 25
-        height: 19
+        x: 200
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e833f4d845252ad50800000000000000
-      internalID: 6747045714855932814
+      spriteID: 3820bdd7454f261b0800000000000000
+      internalID: -5664696737552727421
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime-Idle_3
+      name: Wizard-Attack02_Effect_3
       rect:
         serializedVersion: 2
-        x: 336
-        y: 42
-        width: 25
-        height: 19
+        x: 300
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3bfe5055a8c09bec0800000000000000
-      internalID: -3550793042933452877
+      spriteID: 5e43af53d01ef8270800000000000000
+      internalID: 8255064088849822949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime-Idle_4
+      name: Wizard-Attack02_Effect_4
       rect:
         serializedVersion: 2
-        x: 436
-        y: 42
-        width: 25
-        height: 17
+        x: 400
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f4f5da87b583d65a0800000000000000
-      internalID: -6526498319472173233
+      spriteID: 0b86991e1572088c0800000000000000
+      internalID: -3999153236474238800
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime-Idle_5
+      name: Wizard-Attack02_Effect_5
       rect:
         serializedVersion: 2
-        x: 535
-        y: 42
-        width: 27
-        height: 13
+        x: 500
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 16b8c66dc82255eb0800000000000000
-      internalID: -4731837845194634399
+      spriteID: 3527e1fb229276310800000000000000
+      internalID: 1398131438533898835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wizard-Attack02_Effect_6
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 0
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 411d83b8b1a6e9800800000000000000
+      internalID: 621050465156124948
       vertices: []
       indices: 
       edges: []
@@ -289,7 +275,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1e73d294da3ce084bb6214697fa68b65
     internalID: 0
     vertices: []
     indices: 
@@ -297,14 +283,17 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":100.0,"y":100.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Slime-Idle_0: -7854738478779454800
-      Slime-Idle_1: 7952265997143392756
-      Slime-Idle_2: 6747045714855932814
-      Slime-Idle_3: -3550793042933452877
-      Slime-Idle_4: -6526498319472173233
-      Slime-Idle_5: -4731837845194634399
+      Wizard-Attack02_Effect_0: -8704788006095434069
+      Wizard-Attack02_Effect_1: -9021240426557340010
+      Wizard-Attack02_Effect_2: -5664696737552727421
+      Wizard-Attack02_Effect_3: 8255064088849822949
+      Wizard-Attack02_Effect_4: -3999153236474238800
+      Wizard-Attack02_Effect_5: 1398131438533898835
+      Wizard-Attack02_Effect_6: 621050465156124948
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using SnapToMapTD.Enemies;
+using SnapToMapTD.Game;
 
 namespace SnapToMapTD.Towers
 {
@@ -36,7 +37,7 @@ namespace SnapToMapTD.Towers
         [SerializeField] private float damage2HitDelay2 = 0.5f;
 
         [Header("Targeting")]
-        [SerializeField] private LayerMask enemyLayer;
+        [SerializeField] protected LayerMask enemyLayer;
         [SerializeField] private bool aoeAttack = false;
 
         [Header("Upgrade")]
@@ -45,20 +46,23 @@ namespace SnapToMapTD.Towers
         [SerializeField] private float upgradePowerBonus = 5f;
         [SerializeField] private float upgradeRangeBonus = 0.2f;
 
-        private Animator animator;
+        protected Animator animator;
         private SpriteRenderer spriteRenderer;
         private float attackTimer;
         private float skillTimer;
         private bool useSecondAttack;
         private bool hadTarget;
+        private float attackSpeedMultiplier = 1f;
 
-        private static readonly int AnimAttack = Animator.StringToHash("Attack");
-        private static readonly int AnimAttack2 = Animator.StringToHash("Attack2");
-        private static readonly int AnimSkill = Animator.StringToHash("Skill");
+        protected static readonly int AnimAttack = Animator.StringToHash("Attack");
+        protected static readonly int AnimAttack2 = Animator.StringToHash("Attack2");
+        protected static readonly int AnimSkill = Animator.StringToHash("Skill");
 
-        private int Damage => Mathf.RoundToInt(power * attackRatio);
-        private int SkillDamage => Mathf.RoundToInt(power * skillRatio);
-        private int Damage2 => Mathf.RoundToInt(power * attack2Ratio);
+        protected int Damage => Mathf.RoundToInt(power * attackRatio);
+        protected int SkillDamage => Mathf.RoundToInt(power * skillRatio);
+        protected int Damage2 => Mathf.RoundToInt(power * attack2Ratio);
+        protected float AttackHitDelay => attackHitDelay;
+        protected float SkillHitDelay => skillHitDelay;
 
         public string TowerName => towerName;
         public TowerData Data => towerData;
@@ -71,6 +75,11 @@ namespace SnapToMapTD.Towers
         public int SellPrice => cost / 2;
         public float SkillCooldown => skillCooldown;
         public float SkillTimeRemaining => Mathf.Max(0f, skillTimer);
+        public float AttackSpeed => attackSpeedMultiplier / attackCooldown;
+        public bool IsBuffed => attackSpeedMultiplier > 1f;
+
+        public void ApplyBuff(float multiplier) => attackSpeedMultiplier = multiplier;
+        public void RemoveBuff() => attackSpeedMultiplier = 1f;
 
         public void Upgrade()
         {
@@ -85,14 +94,37 @@ namespace SnapToMapTD.Towers
             animator = GetComponent<Animator>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             attackTimer = attackCooldown;
-            skillTimer = skillCooldown;
+            skillTimer = float.MaxValue;
         }
 
-        private void Update()
+        private void Start()
+        {
+            if (WaveManager.Instance != null)
+            {
+                WaveManager.Instance.onWaveStart.AddListener(OnWaveStart);
+                if (WaveManager.Instance.IsWaveRunning)
+                    skillTimer = skillCooldown;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (WaveManager.Instance != null)
+                WaveManager.Instance.onWaveStart.RemoveListener(OnWaveStart);
+        }
+
+        private void OnWaveStart(int waveNumber)
+        {
+            if (skillTimer == float.MaxValue)
+                skillTimer = skillCooldown;
+        }
+
+        protected virtual void Update()
         {
             Enemy target = FindNearestEnemy();
 
-            skillTimer -= Time.deltaTime;
+            if (WaveManager.Instance != null && WaveManager.Instance.IsWaveRunning)
+                skillTimer -= Time.deltaTime;
 
             if (target == null)
             {
@@ -107,59 +139,77 @@ namespace SnapToMapTD.Towers
             }
 
             attackTimer -= Time.deltaTime;
-
             FaceTarget(target.transform.position);
 
             if (skillTimer <= 0f)
             {
-                if (animator.runtimeAnimatorController != null)
-                    animator.SetTrigger(AnimSkill);
-                StartCoroutine(SkillHitAfterDelay(skillHitDelay));
+                PerformSkill(target);
                 skillTimer = skillCooldown;
-                attackTimer = skillAnimDuration;
+                attackTimer = Mathf.Max(skillAnimDuration, attackCooldown / attackSpeedMultiplier);
                 return;
             }
 
             if (attackTimer <= 0f)
             {
                 if (alternateAttacks && useSecondAttack)
-                {
-                    if (animator.runtimeAnimatorController != null)
-                        animator.SetTrigger(AnimAttack2);
-                    if (aoeAttack)
-                    {
-                        foreach (Enemy e in FindAllEnemiesInRange())
-                        {
-                            StartCoroutine(DealDamageAfterDelay(e, Damage2, damage2HitDelay1));
-                            StartCoroutine(DealDamageAfterDelay(e, Damage2, damage2HitDelay2));
-                        }
-                    }
-                    else
-                    {
-                        StartCoroutine(DealDamageAfterDelay(target, Damage2, damage2HitDelay1));
-                        StartCoroutine(DealDamageAfterDelay(target, Damage2, damage2HitDelay2));
-                    }
-                }
+                    PerformAttack2(target);
                 else
-                {
-                    if (animator.runtimeAnimatorController != null)
-                        animator.SetTrigger(AnimAttack);
-                    if (aoeAttack)
-                    {
-                        foreach (Enemy e in FindAllEnemiesInRange())
-                            StartCoroutine(DealDamageAfterDelay(e, Damage, attackHitDelay));
-                    }
-                    else
-                    {
-                        StartCoroutine(DealDamageAfterDelay(target, Damage, attackHitDelay));
-                    }
-                }
+                    PerformAttack(target);
 
                 if (alternateAttacks)
                     useSecondAttack = !useSecondAttack;
 
-                attackTimer = attackCooldown;
+                attackTimer = attackCooldown / attackSpeedMultiplier;
             }
+        }
+
+        protected virtual void PerformAttack(Enemy target)
+        {
+            if (animator.runtimeAnimatorController != null)
+                animator.SetTrigger(AnimAttack);
+            if (aoeAttack)
+            {
+                foreach (Enemy e in FindAllEnemiesInRange())
+                    StartCoroutine(DealDamageAfterDelay(e, Damage, attackHitDelay));
+            }
+            else
+            {
+                StartCoroutine(DealDamageAfterDelay(target, Damage, attackHitDelay));
+            }
+        }
+
+        protected virtual void PerformAttack2(Enemy target)
+        {
+            if (animator.runtimeAnimatorController != null)
+                animator.SetTrigger(AnimAttack2);
+            if (aoeAttack)
+            {
+                foreach (Enemy e in FindAllEnemiesInRange())
+                {
+                    StartCoroutine(DealDamageAfterDelay(e, Damage2, damage2HitDelay1));
+                    StartCoroutine(DealDamageAfterDelay(e, Damage2, damage2HitDelay2));
+                }
+            }
+            else
+            {
+                StartCoroutine(DealDamageAfterDelay(target, Damage2, damage2HitDelay1));
+                StartCoroutine(DealDamageAfterDelay(target, Damage2, damage2HitDelay2));
+            }
+        }
+
+        protected virtual void PerformSkill(Enemy target)
+        {
+            if (animator.runtimeAnimatorController != null)
+                animator.SetTrigger(AnimSkill);
+            StartCoroutine(SkillHitAfterDelay(skillHitDelay));
+        }
+
+        protected IEnumerator DealDamageAfterDelay(Enemy target, int dmg, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (target == null) yield break;
+            if (Vector2.Distance(transform.position, target.transform.position) <= range * 1.5f)
+                target.TakeDamage(dmg);
         }
 
         private IEnumerator SkillHitAfterDelay(float delay)
@@ -173,20 +223,11 @@ namespace SnapToMapTD.Towers
             else
             {
                 Enemy hit = FindNearestEnemy();
-                if (hit != null)
-                    hit.TakeDamage(SkillDamage);
+                if (hit != null) hit.TakeDamage(SkillDamage);
             }
         }
 
-        private IEnumerator DealDamageAfterDelay(Enemy target, int dmg, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            if (target == null) yield break;
-            if (Vector2.Distance(transform.position, target.transform.position) <= range * 1.5f)
-                target.TakeDamage(dmg);
-        }
-
-        private Enemy[] FindAllEnemiesInRange()
+        protected Enemy[] FindAllEnemiesInRange()
         {
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
             var result = new System.Collections.Generic.List<Enemy>();
@@ -198,7 +239,7 @@ namespace SnapToMapTD.Towers
             return result.ToArray();
         }
 
-        private Enemy FindNearestEnemy()
+        protected Enemy FindNearestEnemy()
         {
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
             Enemy nearest = null;

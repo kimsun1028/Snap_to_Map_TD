@@ -13,13 +13,14 @@ namespace SnapToMapTD.UI
         [SerializeField] private TextMeshProUGUI towerNameText;
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private TextMeshProUGUI powerText;
+        [SerializeField] private TextMeshProUGUI attackSpeedText;
         [SerializeField] private TextMeshProUGUI sellText;
         [SerializeField] private TextMeshProUGUI upgradeText;
         [SerializeField] private Button upgradeButton;
         [SerializeField] private RangeIndicator rangeIndicator;
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private TextMeshProUGUI skillDescriptionText;
-        [SerializeField] private TextMeshProUGUI skillCooldownText;
+        [SerializeField] private Image skillCooldownGauge;
         [SerializeField] private GameObject statsSection;
         [SerializeField] private GameObject descriptionSection;
 
@@ -34,8 +35,17 @@ namespace SnapToMapTD.UI
 
         private void Update()
         {
-            if (isPreview || selectedTower == null || skillCooldownText == null) return;
-            skillCooldownText.text = $"Skill CD  {selectedTower.SkillTimeRemaining:0.0}s / {selectedTower.SkillCooldown:0.0}s";
+            if (isPreview || selectedTower == null) return;
+
+            if (skillCooldownGauge != null)
+                skillCooldownGauge.fillAmount = selectedTower.SkillCooldown > 0f
+                    ? selectedTower.SkillTimeRemaining / selectedTower.SkillCooldown
+                    : 0f;
+
+            if (attackSpeedText != null)
+                attackSpeedText.text = selectedTower.IsBuffed
+                    ? $"SPD  {selectedTower.AttackSpeed:0.0} ▲"
+                    : $"SPD  {selectedTower.AttackSpeed:0.0}";
         }
 
         public void Show(Tower tower)

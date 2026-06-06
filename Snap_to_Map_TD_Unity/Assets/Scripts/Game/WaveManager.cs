@@ -13,6 +13,7 @@ namespace SnapToMapTD.Game
         public GameObject enemyPrefab;
         public int count;
         public float spawnInterval;
+        public float delayAfterGroup;
     }
 
     [Serializable]
@@ -24,6 +25,7 @@ namespace SnapToMapTD.Game
 
     public class WaveManager : MonoBehaviour
     {
+        public static WaveManager Instance { get; private set; }
         [Header("References")]
         [SerializeField] private MapManager mapManager;
 
@@ -42,6 +44,12 @@ namespace SnapToMapTD.Game
 
         public int CurrentWave => currentWave;
         public int TotalWaves => waves.Length;
+        public bool IsWaveRunning { get; private set; }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         private void Start()
         {
@@ -59,12 +67,14 @@ namespace SnapToMapTD.Game
             while (currentWave < waves.Length)
             {
                 waveStartRequested = false;
+                IsWaveRunning = false;
                 onWaveReady?.Invoke();
                 yield return new WaitUntil(() => waveStartRequested);
 
                 Wave wave = waves[currentWave];
                 yield return new WaitForSeconds(wave.delayBeforeWave);
 
+                IsWaveRunning = true;
                 onWaveStart?.Invoke(currentWave + 1);
 
                 foreach (WaveEntry entry in wave.entries)
@@ -72,8 +82,11 @@ namespace SnapToMapTD.Game
                     for (int i = 0; i < entry.count; i++)
                     {
                         SpawnEnemy(entry.enemyPrefab);
-                        yield return new WaitForSeconds(entry.spawnInterval);
+                        if (i < entry.count - 1)
+                            yield return new WaitForSeconds(entry.spawnInterval);
                     }
+                    if (entry.delayAfterGroup > 0f)
+                        yield return new WaitForSeconds(entry.delayAfterGroup);
                 }
 
                 yield return new WaitUntil(() => activeEnemyCount <= 0);

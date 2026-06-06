@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63003452bf0fb4d84a66e0c20ecbf3, type: 3}
+  m_Name: Priest_Data
+  m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.TowerData
+  towerName: Priest
+  prefab: {fileID: 7116364087939901583, guid: 4bee2204a1fccb74cbfc65ed777f383a, type: 3}
+  icon: {fileID: -663804655798916631, guid: 15652012540afa94a859c4f1a6f0ecdd, type: 3}
+  cost: 150
+  description: Priest Desc
+  skillDescription: Skill Desc

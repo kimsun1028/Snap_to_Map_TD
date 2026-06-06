@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace SnapToMapTD.Enemies
         [Header("Stats")]
         [SerializeField] private string enemyName = "Enemy";
         [SerializeField] private float moveSpeed = 2f;
+        private float baseSpeed;
         [SerializeField] private int maxHealth = 100;
         [SerializeField] private int goldReward = 10;
 
@@ -37,8 +39,9 @@ namespace SnapToMapTD.Enemies
         private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
-            animator = GetComponent<Animator>(); // 없어도 동작
+            animator = GetComponent<Animator>();
             currentHealth = maxHealth;
+            baseSpeed = moveSpeed;
         }
 
         public void Initialize(List<Vector3> pathWaypoints)
@@ -84,6 +87,23 @@ namespace SnapToMapTD.Enemies
             if (isDead) return;
             if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
             SnapToMapTD.UI.EnemyInfoPanel.Instance?.Show(this);
+        }
+
+        private Coroutine slowCoroutine;
+
+        public void ApplySlow(float multiplier, float duration)
+        {
+            if (isDead) return;
+            if (slowCoroutine != null) StopCoroutine(slowCoroutine);
+            slowCoroutine = StartCoroutine(SlowCoroutine(multiplier, duration));
+        }
+
+        private IEnumerator SlowCoroutine(float multiplier, float duration)
+        {
+            moveSpeed = baseSpeed * multiplier;
+            yield return new WaitForSeconds(duration);
+            moveSpeed = baseSpeed;
+            slowCoroutine = null;
         }
 
         public void TakeDamage(int amount)
