@@ -151,7 +151,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.15
+  m_Radius: 0.1
 --- !u!114 &2996034747492384468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,13 +166,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.Tower
   towerData: {fileID: 11400000, guid: ec3d2cfe5b5f1c7428c7c2e811435135, type: 2}
   towerName: Archer
-  power: 10
+  power: 20
   range: 2
   attackCooldown: 1
   cost: 100
-  attackRatio: 2
-  skillRatio: 8
-  attack2Ratio: 2
+  attackRatio: 1
+  skillRatio: 3
+  attack2Ratio: 10
   skillCooldown: 10
   attackHitDelay: 0.8
   skillHitDelay: 1.8
@@ -184,7 +184,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   aoeAttack: 0
-  maxLevel: 2
-  upgradeCost: 75
+  maxLevel: 3
+  upgradeCost: 100
   upgradePowerBonus: 5
-  upgradeRangeBonus: 0.2
+  upgradeRangeBonus: 0.5

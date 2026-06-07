@@ -155,7 +155,13 @@ public class MapManager : MonoBehaviour
         float worldHeight = imgHeight / pixelsPerUnit;
 
         // 좌우 15%씩 UI 여백, 맵은 중앙 70%에 표시
-        float mapScreenRatio = 0.7f;
+        const float leftRatio = 0.15f;
+        const float mapScreenRatio = 0.7f;
+
+        EnsureBackgroundCamera(cam);
+        cam.rect = new Rect(leftRatio, 0f, mapScreenRatio, 1f);
+        cam.clearFlags = CameraClearFlags.Depth;
+
         float effectiveAspect = (float)Screen.width * mapScreenRatio / Screen.height;
         float mapAspect = worldWidth / worldHeight;
 
@@ -167,6 +173,21 @@ public class MapManager : MonoBehaviour
             worldOrigin.x,
             worldOrigin.y,
             cam.transform.position.z);
+    }
+
+    private void EnsureBackgroundCamera(Camera mainCam)
+    {
+        const string bgCamName = "BackgroundCamera";
+        if (GameObject.Find(bgCamName) != null) return;
+
+        var go = new GameObject(bgCamName);
+        var bgCam = go.AddComponent<Camera>();
+        bgCam.clearFlags = CameraClearFlags.SolidColor;
+        bgCam.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+        bgCam.cullingMask = 0;
+        bgCam.depth = mainCam.depth - 1;
+        bgCam.rect = new Rect(0f, 0f, 1f, 1f);
+        bgCam.orthographic = true;
     }
 
     private SpriteRenderer EnsureBackgroundRenderer()

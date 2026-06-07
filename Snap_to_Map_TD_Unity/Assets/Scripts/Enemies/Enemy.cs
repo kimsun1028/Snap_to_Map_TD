@@ -30,6 +30,7 @@ namespace SnapToMapTD.Enemies
         private static readonly int AnimHurt = Animator.StringToHash("Hurt");
         private static readonly int AnimDeath = Animator.StringToHash("Death");
 
+        public bool IsDead => isDead;
         public string EnemyName => enemyName;
         public int MaxHealth => maxHealth;
         public int CurrentHealth => currentHealth;

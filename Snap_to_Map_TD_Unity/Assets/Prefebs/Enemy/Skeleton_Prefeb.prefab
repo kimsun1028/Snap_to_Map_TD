@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Enemies.Enemy
   enemyName: Skeleton
   moveSpeed: 1
-  maxHealth: 60
+  maxHealth: 100
   goldReward: 15
   livesToLose: 1
 --- !u!95 &2209928109839166695

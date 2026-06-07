@@ -18,10 +18,23 @@ namespace SnapToMapTD.UI
             if (iconImage != null && towerData != null && towerData.icon != null)
                 iconImage.sprite = towerData.icon;
 
-            if (costText != null && towerData != null)
-                costText.text = $"{towerData.cost}G";
-
+            RefreshCost();
             GetComponent<Button>().onClick.AddListener(OnClick);
+
+            if (placer != null)
+                placer.onTowerPlaced += RefreshCost;
+        }
+
+        private void OnDestroy()
+        {
+            if (placer != null)
+                placer.onTowerPlaced -= RefreshCost;
+        }
+
+        private void RefreshCost()
+        {
+            if (costText != null && towerData != null && placer != null)
+                costText.text = $"{placer.GetCurrentCost(towerData)}G";
         }
 
         private void OnClick()

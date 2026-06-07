@@ -1,13 +1,35 @@
 import cv2 as cv
 import numpy as np
 import json
+import sys
+import os
+import shutil
 
-INPUT_IMAGE = "img1.jpg"
+# PyInstaller exe 또는 스크립트 기준 디렉토리
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 이미지 파일 선택
+import tkinter as tk
+from tkinter import filedialog
+_root = tk.Tk()
+_root.withdraw()
+INPUT_IMAGE = filedialog.askopenfilename(
+    title="Select map image",
+    initialdir=BASE_DIR,
+    filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]
+)
+_root.destroy()
+if not INPUT_IMAGE:
+    sys.exit("No image selected.")
+
 img = cv.imread(INPUT_IMAGE, cv.IMREAD_GRAYSCALE)
 img_color = cv.imread(INPUT_IMAGE)
 
 if img is None:
-	raise FileNotFoundError("Image not found: img.jpg")
+    raise FileNotFoundError(f"Image not found: {INPUT_IMAGE}")
 
 # 이미지 크기 조정 (긴 변을 1200px으로 설정)
 height, width = img.shape
@@ -219,30 +241,34 @@ def extract_contour_route(contour, start_point, end_point, prefer_longer=True):
 mouse_points = []
 
 def mouse_callback(event, x, y, flags, param):
-	"""마우스 클릭 콜백"""
 	global mouse_points
 	if event == cv.EVENT_LBUTTONDOWN:
 		mouse_points.append((x, y))
-		print(f"Point {len(mouse_points)}: ({x}, {y})")
 
-cv.imshow("longOutlineOnly",img_long_edge)
+def show_edge_with_hint(hint, clicked=[]):
+	display = cv.cvtColor(img_long_edge, cv.COLOR_GRAY2BGR)
+	for pt in clicked:
+		cv.circle(display, pt, 6, (0, 255, 0), -1)
+	cv.putText(display, hint, (10, 28), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 3)
+	cv.putText(display, hint, (10, 28), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 230, 255), 2)
+	cv.putText(display, "ESC: Cancel", (10, 56), cv.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+	cv.putText(display, "ESC: Cancel", (10, 56), cv.FONT_HERSHEY_SIMPLEX, 0.6, (180, 180, 180), 1)
+	cv.imshow("Map Setup", display)
 
-# 마우스 콜백 설정 (longOutlineOnly 창에서)
-cv.setMouseCallback("longOutlineOnly", mouse_callback)
+cv.namedWindow("Map Setup")
+cv.setMouseCallback("Map Setup", mouse_callback)
 
-print("시작점을 클릭하세요 (왼쪽 마우스 버튼)")
+show_edge_with_hint("Step 1: Click START point")
 while len(mouse_points) < 1:
 	key = cv.waitKey(1)
 	if key == 27:
-		print("취소됨")
 		cv.destroyAllWindows()
 		exit()
 
-print("끝점을 클릭하세요 (왼쪽 마우스 버튼)")
+show_edge_with_hint("Step 2: Click END point", mouse_points)
 while len(mouse_points) < 2:
 	key = cv.waitKey(1)
 	if key == 27:
-		print("취소됨")
 		cv.destroyAllWindows()
 		exit()
 
@@ -291,8 +317,12 @@ else:
 		selected_path_idx = 0
 		
 		def show_path(idx):
-			cv.imshow("Path", path_images[idx])
-			print(f"경로 {idx+1}/2 - 스페이스로 토글, ESC로 선택")
+			display = cv.cvtColor(path_images[idx], cv.COLOR_GRAY2BGR)
+			cv.putText(display, f"Path {idx+1}/2", (10, 28), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,0), 3)
+			cv.putText(display, f"Path {idx+1}/2", (10, 28), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 230, 255), 2)
+			cv.putText(display, "SPACE: Switch path  |  ESC: Confirm this path", (10, 56), cv.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,0), 2)
+			cv.putText(display, "SPACE: Switch path  |  ESC: Confirm this path", (10, 56), cv.FONT_HERSHEY_SIMPLEX, 0.6, (180,180,180), 1)
+			cv.imshow("Path", display)
 		
 		show_path(current_path_idx)
 		
@@ -315,8 +345,9 @@ else:
 		red_contours, _ = cv.findContours(selected_path, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 		cv.drawContours(img_original_rgb, red_contours, -1, (0, 0, 255), 2)
 		
+		cv.putText(img_original_rgb, "Done! Press any key to save and exit.", (10, 28), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,0), 3)
+		cv.putText(img_original_rgb, "Done! Press any key to save and exit.", (10, 28), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 230, 255), 2)
 		cv.imshow("Result with Red Path", img_original_rgb)
-		print("빨간 선으로 표시된 최종 결과입니다. 종료하려면 아무 키나 누르세요.")
 
 		if selected_path_idx == 0:
 			selected_path_points = path
@@ -343,37 +374,29 @@ else:
 			contour_points = contour.reshape(-1, 2).tolist()
 			path_data["contours"].append(contour_points)
 		
-		# JSON 파일로 저장
-		with open("path_data.json", "w") as f:
-			json.dump(path_data, f, indent=2)
-		print("경로 정보가 'path_data.json'에 저장되었습니다.")
+		# 빌드 StreamingAssets 경로 (배포 빌드 기준)
+		streaming_assets = os.path.join(BASE_DIR, "Snap_to_Map_TD_Unity_Data", "StreamingAssets")
+		# 에디터 폴백
+		if not os.path.isdir(streaming_assets):
+			streaming_assets = os.path.join(BASE_DIR, "Snap_to_Map_TD_Unity", "Assets", "StreamingAssets")
+		if not os.path.isdir(streaming_assets):
+			streaming_assets = BASE_DIR
 
-		# StreamingAssets에 자동 복사
-		import shutil, os
-		script_dir = os.path.dirname(os.path.abspath(__file__))
-		streaming_assets = os.path.join(script_dir, "Snap_to_Map_TD_Unity", "Assets", "StreamingAssets")
-		if os.path.isdir(streaming_assets):
-			json_src = os.path.join(script_dir, "path_data.json")
-			shutil.copy(json_src, os.path.join(streaming_assets, "path_data.json"))
-			dest_image = os.path.join(streaming_assets, OUTPUT_IMAGE)
-			if img_color is not None:
-				result = cv.imwrite(dest_image, img_color)
-				print(f"이미지 저장 {'성공' if result else '실패'}: {dest_image}")
-			else:
-				shutil.copy(os.path.join(script_dir, INPUT_IMAGE), dest_image)
-			print(f"StreamingAssets에 자동 복사 완료: path_data.json, {OUTPUT_IMAGE}")
+		os.makedirs(streaming_assets, exist_ok=True)
+
+		json_path = os.path.join(streaming_assets, "path_data.json")
+		with open(json_path, "w") as f:
+			json.dump(path_data, f, indent=2)
+		print(f"path_data.json 저장: {json_path}")
+
+		dest_image = os.path.join(streaming_assets, OUTPUT_IMAGE)
+		if img_color is not None:
+			result = cv.imwrite(dest_image, img_color)
+			print(f"이미지 저장 {'성공' if result else '실패'}: {dest_image}")
 		else:
-			print(f"StreamingAssets 폴더 없음: {streaming_assets}")
+			shutil.copy(INPUT_IMAGE, dest_image)
+		print(f"저장 완료: {streaming_assets}")
 		
-		# TXT 파일로도 저장 (간단한 형식)
-		with open("path_data.txt", "w") as f:
-			f.write(f"Start Point: {actual_start}\n")
-			f.write(f"End Point: {actual_end}\n")
-			f.write(f"Total Path Points: {len(path)}\n\n")
-			f.write("Path Points (x, y):\n")
-			for i, point in enumerate(path):
-				f.write(f"{i}: {point}\n")
-		print("경로 정보가 'path_data.txt'에 저장되었습니다.")
 
 while True:
 	key = cv.waitKey(0) 

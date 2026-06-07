@@ -17,5 +17,5 @@ MonoBehaviour:
   icon: {fileID: 5420657165879536120, guid: de8866197ad530449a7c13cde27d6620, type: 3}
   cost: 100
   description: 'Archer : Basic tower that attacks enemies from a distance.'
-  skillDescription: 'Skill: Focuses and snipes the enemy, dealing heavy single-target
+  skillDescription: 'Flame Attack : Focuses and snipes the enemy, dealing heavy single-target
     damage.'

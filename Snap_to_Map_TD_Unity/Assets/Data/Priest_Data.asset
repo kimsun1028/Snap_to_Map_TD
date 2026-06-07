@@ -16,5 +16,6 @@ MonoBehaviour:
   prefab: {fileID: 7116364087939901583, guid: 4bee2204a1fccb74cbfc65ed777f383a, type: 3}
   icon: {fileID: -663804655798916631, guid: 15652012540afa94a859c4f1a6f0ecdd, type: 3}
   cost: 150
-  description: Priest Desc
-  skillDescription: Skill Desc
+  description: 'Priest : Attacks enemies with holy bolts.'
+  skillDescription: 'Blessing : Temporarily boosts the attack speed of a nearby ally
+    tower.'

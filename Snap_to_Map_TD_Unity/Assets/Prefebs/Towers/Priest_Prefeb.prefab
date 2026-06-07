@@ -151,7 +151,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.15
+  m_Radius: 0.1
 --- !u!114 &3509603359633722540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,9 +185,9 @@ MonoBehaviour:
     m_Bits: 8
   aoeAttack: 0
   maxLevel: 2
-  upgradeCost: 75
-  upgradePowerBonus: 5
-  upgradeRangeBonus: 0.2
+  upgradeCost: 150
+  upgradePowerBonus: 10
+  upgradeRangeBonus: 0.5
   holyBoltPrefab: {fileID: 6310422798998893404, guid: c4d4a5b0104b09f4dad70fd99a5b4a31, type: 3}
   buffEffectPrefab: {fileID: 5905672564960597590, guid: d2f8f0af22eb9af41ad934a8f6191444, type: 3}
   buffRange: 1.5

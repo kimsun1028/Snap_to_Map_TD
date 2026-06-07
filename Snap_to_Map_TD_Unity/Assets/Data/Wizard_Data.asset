@@ -16,5 +16,6 @@ MonoBehaviour:
   prefab: {fileID: 6780866149236688526, guid: eb09d9884b81b7245a931c82e2b229c3, type: 3}
   icon: {fileID: -5908238798454654921, guid: 7e2ab0e10d6cb2348ab196bb8f097fad, type: 3}
   cost: 150
-  description: WD
-  skillDescription: SD
+  description: 'Wizard : Launches a fireball that tracks and damages a single enemy.'
+  skillDescription: 'Blizzard : Deals damage and slows all enemies in the target
+    area.'

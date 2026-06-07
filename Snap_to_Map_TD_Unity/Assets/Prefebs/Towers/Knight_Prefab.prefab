@@ -151,7 +151,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.15
+  m_Radius: 0.1
 --- !u!114 &8135811184883776813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +184,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   aoeAttack: 1
-  maxLevel: 2
-  upgradeCost: 75
+  maxLevel: 3
+  upgradeCost: 100
   upgradePowerBonus: 5
-  upgradeRangeBonus: 0.2
+  upgradeRangeBonus: 0.25

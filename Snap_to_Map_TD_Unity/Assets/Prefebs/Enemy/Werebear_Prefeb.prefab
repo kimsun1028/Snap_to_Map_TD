@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Enemies.Enemy
   enemyName: Werebear
   moveSpeed: 0.5
-  maxHealth: 500
+  maxHealth: 5000
   goldReward: 125
   livesToLose: 5
 --- !u!95 &2209928109839166695

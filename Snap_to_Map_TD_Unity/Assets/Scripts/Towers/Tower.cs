@@ -51,7 +51,6 @@ namespace SnapToMapTD.Towers
         private float attackTimer;
         private float skillTimer;
         private bool useSecondAttack;
-        private bool hadTarget;
         private float attackSpeedMultiplier = 1f;
 
         protected static readonly int AnimAttack = Animator.StringToHash("Attack");
@@ -72,7 +71,7 @@ namespace SnapToMapTD.Towers
         public int Level { get; private set; } = 1;
         public bool CanUpgrade => Level < maxLevel;
         public int UpgradeCost => upgradeCost;
-        public int SellPrice => cost / 2;
+        public int SellPrice => (cost + (Level - 1) * upgradeCost) / 2;
         public float SkillCooldown => skillCooldown;
         public float SkillTimeRemaining => Mathf.Max(0f, skillTimer);
         public float AttackSpeed => attackSpeedMultiplier / attackCooldown;
@@ -127,16 +126,7 @@ namespace SnapToMapTD.Towers
                 skillTimer -= Time.deltaTime;
 
             if (target == null)
-            {
-                hadTarget = false;
                 return;
-            }
-
-            if (!hadTarget)
-            {
-                attackTimer = 0.05f;
-                hadTarget = true;
-            }
 
             attackTimer -= Time.deltaTime;
             FaceTarget(target.transform.position);

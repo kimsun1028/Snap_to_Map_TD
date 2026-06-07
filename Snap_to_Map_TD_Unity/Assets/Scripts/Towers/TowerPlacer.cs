@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -11,10 +12,22 @@ namespace SnapToMapTD.Towers
     {
         [SerializeField] private GameObject cancelButton;
 
+        private const int CostIncreasePerTower = 25;
+        private readonly Dictionary<TowerData, int> placedCounts = new();
+
+        private TowerData selectedData;
         private GameObject selectedPrefab;
         private int selectedCost;
         private GameObject ghostInstance;
         private Camera mainCamera;
+
+        public event System.Action onTowerPlaced;
+
+        public int GetCurrentCost(TowerData data)
+        {
+            int count = placedCounts.TryGetValue(data, out int n) ? n : 0;
+            return data.cost + count * CostIncreasePerTower;
+        }
 
         private void Awake()
         {
@@ -31,8 +44,9 @@ namespace SnapToMapTD.Towers
             TowerInfoPanel.Instance?.Hide();
             Cancel();
 
+            selectedData = data;
             selectedPrefab = data.prefab;
-            selectedCost = data.cost;
+            selectedCost = GetCurrentCost(data);
             cancelButton?.SetActive(true);
 
             ghostInstance = Instantiate(selectedPrefab);
@@ -78,7 +92,7 @@ namespace SnapToMapTD.Towers
 
         private void TryPlace(Vector3 worldPos)
         {
-            if (IsOnRoad(worldPos))
+            if (IsOnRoad(worldPos) || IsOnTower(worldPos))
             {
                 Cancel();
                 return;
@@ -91,15 +105,29 @@ namespace SnapToMapTD.Towers
             }
 
             Instantiate(selectedPrefab, worldPos, Quaternion.identity);
+
+            if (selectedData != null)
+                placedCounts[selectedData] = placedCounts.TryGetValue(selectedData, out int n) ? n + 1 : 1;
+
+            onTowerPlaced?.Invoke();
             Cancel();
         }
 
-        [SerializeField] private float placementCheckRadius = 0.3f;
+        [SerializeField] private float roadCheckRadius = 0.05f;
+        [SerializeField] private float towerCheckRadius = 0.1f;
 
         private bool IsOnRoad(Vector3 worldPos)
         {
-            foreach (var col in Physics2D.OverlapCircleAll(worldPos, placementCheckRadius))
+            foreach (var col in Physics2D.OverlapCircleAll(worldPos, roadCheckRadius))
                 if (col.GetComponent<MapRoadGenerator>() != null)
+                    return true;
+            return false;
+        }
+
+        private bool IsOnTower(Vector3 worldPos)
+        {
+            foreach (var col in Physics2D.OverlapCircleAll(worldPos, towerCheckRadius))
+                if (col.GetComponent<Tower>() != null)
                     return true;
             return false;
         }
@@ -111,6 +139,7 @@ namespace SnapToMapTD.Towers
                 Destroy(ghostInstance);
                 ghostInstance = null;
             }
+            selectedData = null;
             selectedPrefab = null;
             selectedCost = 0;
             cancelButton?.SetActive(false);

@@ -168,7 +168,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!58 &1677216617766489656
 CircleCollider2D:
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Enemies.Enemy
   enemyName: Slime
   moveSpeed: 0.7
-  maxHealth: 40
+  maxHealth: 50
   goldReward: 10
   livesToLose: 1
 --- !u!95 &2209928109839166695

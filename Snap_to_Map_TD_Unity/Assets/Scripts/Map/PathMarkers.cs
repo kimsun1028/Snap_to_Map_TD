@@ -8,15 +8,15 @@ namespace SnapToMapTD
         [Header("References")]
         [SerializeField] private MapManager mapManager;
 
-        [Header("Spawn Marker")]
+        [Header("Start Portal")]
         [SerializeField] private Sprite spawnSprite;
-        [SerializeField] private Color spawnColor = new Color(1f, 0.3f, 0.3f, 1f);
-        [SerializeField] private float spawnScale = 0.5f;
+        [SerializeField] private Color spawnColor = Color.white;
+        [SerializeField] private float spawnScale = 0.08f;
 
-        [Header("Destination Marker")]
+        [Header("End Portal")]
         [SerializeField] private Sprite destinationSprite;
-        [SerializeField] private Color destinationColor = new Color(0.3f, 0.7f, 1f, 1f);
-        [SerializeField] private float destinationScale = 0.5f;
+        [SerializeField] private Color destinationColor = Color.white;
+        [SerializeField] private float destinationScale = 0.08f;
 
         [Header("Sorting")]
         [SerializeField] private int sortingOrder = 20;

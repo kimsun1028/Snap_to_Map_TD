@@ -18,5 +18,5 @@ MonoBehaviour:
   cost: 100
   description: 'Knight : Basic tower that attacks all enemies within range in melee
     combat.'
-  skillDescription: 'Skill: Unleashes a Flame Smash, dealing heavy AoE damage to
-    all enemies in range.'
+  skillDescription: 'Sniping : Unleashes a Flame Smash, dealing heavy AoE damage
+    to all enemies in range.'

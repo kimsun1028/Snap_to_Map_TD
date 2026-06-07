@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Enemies.Enemy
   enemyName: Orc
   moveSpeed: 1
-  maxHealth: 80
+  maxHealth: 130
   goldReward: 20
   livesToLose: 1
 --- !u!95 &2209928109839166695

@@ -130,14 +130,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Towers.WizardTower
   towerData: {fileID: 11400000, guid: 0c8238fa325b50344a15312af9e87ac3, type: 2}
   towerName: Wizard
-  power: 15
+  power: 40
   range: 1.5
-  attackCooldown: 1
-  cost: 50
+  attackCooldown: 2
+  cost: 150
   attackRatio: 1
-  skillRatio: 15
+  skillRatio: 2
   attack2Ratio: 1
-  skillCooldown: 15
+  skillCooldown: 20
   attackHitDelay: 0.3
   skillHitDelay: 0.5
   skillAnimDuration: 1.5
@@ -148,17 +148,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   aoeAttack: 0
-  maxLevel: 2
-  upgradeCost: 75
-  upgradePowerBonus: 5
-  upgradeRangeBonus: 0.2
+  maxLevel: 3
+  upgradeCost: 150
+  upgradePowerBonus: 10
+  upgradeRangeBonus: 0
   fireballPrefab: {fileID: 1695728992829437039, guid: 86bf0ff0e708ed1458a00066b8e5b357, type: 3}
   projectileSpeed: 4
-  fireballAoeRadius: 0.2
+  fireballAoeRadius: 0
   blizzardPrefab: {fileID: 3969679160178799148, guid: 22a9380390815b4498dbc062baadea4d, type: 3}
   blizzardAoeRadius: 0.5
-  slowMultiplier: 0.4
-  blizzardLifetime: 5
+  slowMultiplier: 0.5
+  blizzardLifetime: 7
 --- !u!58 &-2691326109781980431
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -194,4 +194,4 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.15
+  m_Radius: 0.1
