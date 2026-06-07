@@ -7,8 +7,8 @@
 ## 남은 것
 
 ### 1. Enemy 스프라이트 그림자 버전으로 교체
-- [ ] Skeleton, Slime, Werebear, Werewolf 각 Walk/Hurt/Death 클립 스프라이트 교체
-- [ ] 교체 후 애니메이션 정상 출력 확인
+- [x] Skeleton, Slime, Werebear, Werewolf 각 Walk/Hurt/Death 클립 스프라이트 교체
+- [x] 교체 후 애니메이션 정상 출력 확인
 
 ### 2. Wave 10까지 구성
 - [ ] WaveManager Inspector에서 Wave 1~10 설정
