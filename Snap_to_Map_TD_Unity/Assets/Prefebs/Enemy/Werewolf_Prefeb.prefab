@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapToMapTD.Enemies.Enemy
   enemyName: Werewolf
-  moveSpeed: 2
+  moveSpeed: 1.5
   maxHealth: 200
   goldReward: 50
   livesToLose: 3

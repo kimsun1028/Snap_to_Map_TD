@@ -154,7 +154,7 @@ MonoBehaviour:
   upgradeRangeBonus: 0.2
   fireballPrefab: {fileID: 1695728992829437039, guid: 86bf0ff0e708ed1458a00066b8e5b357, type: 3}
   projectileSpeed: 4
-  fireballAoeRadius: 0.2
+  fireballAoeRadius: 0
   blizzardPrefab: {fileID: 3969679160178799148, guid: 22a9380390815b4498dbc062baadea4d, type: 3}
   blizzardAoeRadius: 0.5
   slowMultiplier: 0.4

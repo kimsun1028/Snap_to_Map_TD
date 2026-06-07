@@ -45,7 +45,13 @@ namespace SnapToMapTD.Towers
         private IEnumerator SpawnBlizzardAfterDelay(Enemy target, float delay)
         {
             yield return new WaitForSeconds(delay);
-            Vector3 spawnPos = target != null ? target.transform.position : transform.position;
+            if (target == null || target.IsDead) yield break;
+
+            Vector3 spawnPos = target.transform.position;
+            Vector3 toTarget = spawnPos - transform.position;
+            if (toTarget.magnitude > Range)
+                spawnPos = transform.position + toTarget.normalized * Range;
+
             GameObject go = Instantiate(blizzardPrefab, spawnPos, Quaternion.identity);
             BlizzardEffect blizzard = go.GetComponent<BlizzardEffect>();
             if (blizzard != null) blizzard.Init(SkillDamage, blizzardAoeRadius, slowMultiplier, blizzardLifetime, enemyLayer);
