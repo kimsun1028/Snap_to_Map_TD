@@ -22,7 +22,11 @@
 
 빌드 폴더에서 **Mapmaking.exe**를 실행합니다.
 
-> **참고:** 서명되지 않은 실행 파일이므로 처음 실행 시 Windows Defender 또는 방화벽 경고가 뜰 수 있습니다. `추가 정보 → 실행` 을 클릭하면 정상적으로 실행됩니다.
+> **참고:** 서명되지 않은 실행 파일이므로 처음 실행 시 Windows Defender SmartScreen 경고가 뜰 수 있습니다. **추가 정보** 를 클릭한 뒤 **실행** 을 누르면 정상적으로 실행됩니다.
+
+| 경고 화면 | 추가 정보 클릭 후 |
+|:---------:|:-----------------:|
+| ![Defender 경고](ReadmeImages/BeforeAdditionalinfo.png) | ![실행 버튼](ReadmeImages/AfterAdditionalInfo.png) |
 
 ![Mapmaking.exe 실행](ReadmeImages/Before%20Mapmaking.png)
 
