@@ -19,17 +19,46 @@
 ## 시작하기
 
 ### 1단계 — 맵 생성
-1. `Mapmaking.exe` 실행
-2. 파일 선택 창에서 맵으로 사용할 이미지를 선택
-3. 경로의 **시작 지점** 클릭
-4. 경로의 **끝 지점** 클릭
-5. `Space`로 두 경로 후보를 전환하고, `ESC`로 선택 확정
-6. 결과 파일이 게임 데이터 폴더에 자동 저장됩니다.
+
+빌드 폴더에서 **Mapmaking.exe**를 실행합니다.
+
+![Mapmaking.exe 실행](ReadmeImages/Before%20Mapmaking.png)
+
+파일 선택 창에서 맵으로 사용할 이미지를 선택합니다.
+
+![이미지 선택](ReadmeImages/Selecting%20Image.png)
+
+에지 검출 결과가 표시됩니다. 경로의 **시작 지점**과 **끝 지점**을 순서대로 클릭합니다.
+
+![시작/끝 지점 설정](ReadmeImages/Start%2Cendpointing.png)
+
+`Space`로 두 경로 후보를 전환하며 원하는 경로를 선택합니다.
+
+![경로 선택](ReadmeImages/PathSelecting.png)
+
+`ESC`로 선택을 확정하면 원본 사진 위에 경로가 표시됩니다. 아무 키나 누르면 저장됩니다.
+
+![경로 선택 완료](ReadmeImages/PathSelectingcomplete.png)
+
+---
 
 ### 2단계 — 플레이
-1. `Snap_to_Map_TD_Unity.exe` 실행
-2. 경로 옆에 타워를 배치하고 **Wave Start** 클릭
-3. 10웨이브를 버텨내세요!
+
+빌드 폴더에서 **Snap_to_Map_TD_Unity.exe**를 실행합니다.
+
+![게임 실행](ReadmeImages/Gamefileselect.png)
+
+생성한 맵이 자동으로 로드됩니다. 경로 옆에 타워를 배치하고 **Wave Start**를 클릭합니다.
+
+![게임 화면](ReadmeImages/GameEntered.png)
+
+적들이 경로를 따라 이동합니다.
+
+![웨이브 시작](ReadmeImages/FirstWave.png)
+
+타워를 강화하고 10웨이브를 버텨내세요!
+
+![게임 진행 중](ReadmeImages/GamePlaying.png)
 
 ---
 
